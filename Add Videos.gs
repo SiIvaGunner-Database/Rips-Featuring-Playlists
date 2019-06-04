@@ -1,10 +1,13 @@
-var spreadsheetID = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';//SiIvaJokes
+var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';//SiIvaJokes
+var siivaInfo = '1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk';//SiIvaInfo
+
+var removedList = getRemovedRips();
 
 //Updates playlist as the associated spreadsheet is updated
 function playlistUpdate1()
 {
-  var sheetName = getPlaylistInfo('names');
-  var playlistID = getPlaylistInfo('IDs');
+  var sheetName = getPlaylistInfo(siivaJokes, 'names');
+  var playlistID = getPlaylistInfo(siivaJokes, 'IDs');
   var successCount = 0;
   var failCount = 0;
   
@@ -12,16 +15,16 @@ function playlistUpdate1()
   {
     Logger.log("Working on " + sheetName[i] + " [" + playlistID[i] + "]");
     console.log("Working on " + sheetName[i] + " [" + playlistID[i] + "]");
-    var list = readValues(spreadsheetID, sheetName[i]);
-    var missingVideos = findMissingItems(playlistID[i], list)
+    var list = getValues(sheetName[i]);
+    var missingVideos = getMissingRips(playlistID[i], list)
     
     for (video in missingVideos)
     {
       
-      var vidNum = parseInt(video);
+      var vidNum = parseInt(video) + 1;
       Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
       console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      //*
+      /*
       var searchResult = searchByKeyword(missingVideos[video]);
       try
       {
@@ -44,7 +47,7 @@ function playlistUpdate1()
       } catch (e)
       {
         Logger.log("Video failed to insert.");
-        console.log(searchResult[1] + " failed to insert. Error: " + e);
+        console.log("Video failed to insert.");
         failCount++;
       }
       //*/
@@ -59,38 +62,83 @@ function playlistUpdate1()
 
 
 
+function getRemovedRips()
+{
+  var removedSpreadsheet = SpreadsheetApp.openById(siivaInfo);//SiIvaInfo
+  var removedListNames = getPlaylistInfo(siivaInfo, 'names');
+  var removedList = [];
+
+  var startRow = 60;
+  var cont = true;
+  
+  for (name in removedListNames)
+  {
+    var removedSheet = removedSpreadsheet.getSheetByName(removedListNames[name]);
+    var removedData = removedSheet.getDataRange();
+    var removedValues = removedData.getValues();
+    var removedRow = 60;
+    var countVals = 0;
+    while (cont)
+    {
+      startRow++;
+      if (removedValues[startRow][0] == "Other")
+      {
+        removedRow = startRow+1;
+        cont = false;
+      }
+    }
+    
+    cont = true;
+    
+    while (cont)
+    {
+      try 
+      {
+        if (removedValues[removedRow][0] != "")
+        {
+          removedList.push(formatString(removedValues[removedRow][0]));
+        }
+        else
+          cont = false;
+      } catch (e) 
+      {
+        cont = false;
+        console.log(e);
+      }
+      removedRow++;
+    }
+    
+    startRow = 60;
+    cont = true;
+  }
+  for (d in removedList)
+  {
+    //Logger.log("Formatted: " + formatString(removedList[d]));
+  }
+  
+  return removedList
+}
+
+
+
+
 //Finds the the highest cell row with content in the sheet
-function readValues(spreadsheetID, sheetName)
+function getValues(sheetName)
 {
   /*
-  spreadsheetID = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';//SiIvaJokes
   sheetName = 'Rips featuring All Star';
   //*/
-  var removedSpreadsheet = SpreadsheetApp.openById('1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk');//SiIvaInfo
-  var removedSheet = removedSpreadsheet.getSheetByName('Removed Rips');
-  var removedData = removedSheet.getDataRange();
-  var removedValues = removedData.getValues();
-  var removedRow = 96;
-  var removedList = [];
-  var ignoredRips = [];
-  
-  var nonReuploadedSheet = removedSpreadsheet.getSheetByName('GiIvaSunner non-reuploaded');
-  var nonReuploadedData = nonReuploadedSheet.getDataRange();
-  var nonReuploadedValues = nonReuploadedData.getValues();
-  var nonReuploadedRow = 87;
-  var nonReuploadedList = [];
-  var nonReuploadedRips = [];
-  
-  var spreadsheet = SpreadsheetApp.openById(spreadsheetID);//SiIvaJokes
+  var spreadsheet = SpreadsheetApp.openById(siivaJokes);//SiIvaJokes
   var sheet = spreadsheet.getSheetByName(sheetName);
   var data = sheet.getDataRange();
   var values = data.getValues();
   var cellRow = 60;
   var list = [];
+  var removedRips = [];
 
   var startRow = 60;
   var cont = true;
-  
+    
   while (cont)
   {
     startRow++;
@@ -101,74 +149,31 @@ function readValues(spreadsheetID, sheetName)
     }
   }
   
-  Logger.log("Starting row: " + startRow);
-  
-  cont = true;
-  
-  while (cont)
-  {
-    try 
-    {
-      if (removedValues[removedRow][0] != "")
-        removedList[removedRow - 96] = formatString(removedValues[removedRow][0]);
-      else
-        cont = false;
-    } catch (e) 
-    {
-      cont = false;
-      console.log(e);
-    }
-    removedRow++;
-  }
-  
   cont = true;
 
   while (cont)
   {
     try 
     {
-      if (nonReuploadedValues[nonReuploadedRow][0] != "")
-        nonReuploadedList[nonReuploadedRow - 96] = formatString(nonReuploadedValues[nonReuploadedRow][0]);
-      else
-        cont = false;
-    } catch (e) 
-    {
-      cont = false;
-      console.log(e);
-    }
-    nonReuploadedRow++;
-  }
-  
-  cont = true;
-  var ignore = false;
-  var ingoredList = removedList.concat(nonReuploadedList);
-  
-  while (cont)
-  {
-    try 
-    {
       if (values[cellRow][0] != "")
       {
-        ignore = false;
-        for (r in ingoredList)
+        found = false;
+        for (r in removedList)
         {
-          if (ingoredList[r].toLowerCase().equals(formatString(values[cellRow][0]).toLowerCase()))
+          if (removedList[r].toLowerCase().equals(formatString(values[cellRow][0]).toLowerCase()))
           {
-            try 
-            {
-              ignoredRips.push(ingoredList[r]);
-            } catch (e)
-            {
-              Logger.log(e)
-            }
-            ignore = true;
+            if (!found)
+              removedRips.push(removedList[r]);
+            found = true;
           }
         }
-        if (ignore == false)
-          list[cellRow - startRow - 1 - ignoredRips.length] = formatString(values[cellRow][0]);
+        if (!found)
+          list.push(formatString(values[cellRow][0]));
       }
       else
+      {
         cont = false;
+      }
     } catch (e) {
       cont = false;
       console.log(e);
@@ -176,8 +181,13 @@ function readValues(spreadsheetID, sheetName)
     cellRow++;
   }
   
-  if (ignoredRips != "")
-    Logger.log("Removed rips: " + ignoredRips);
+  if (removedRips != "")
+  {
+    Logger.log("Removed rips: " + removedRips.length);
+    Logger.log("Removed rips: " + removedRips);
+    console.log("Removed rips: " + removedRips.length);
+    console.log("Removed rips: " + removedRips);
+  }
 
   return list;
 }
@@ -186,13 +196,13 @@ function readValues(spreadsheetID, sheetName)
 
 
 //Determines whether the video is already in the playlist
-function findMissingItems(playlistID, list) 
+function getMissingRips(playlistID, list) 
 {
   /*
   playlistID = 'PLn8P5M1uNQk7Uj5GmdBcuxOAzxfWUac-Z';
-  spreadsheetID = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
+  siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
   sheetName = 'Rips with Sentence Mixing';
-  list = readValues(spreadsheetID, sheetName);
+  list = getValues(siivaJokes, sheetName);
   //*/
   
   var inPlaylist = [];
@@ -208,10 +218,8 @@ function findMissingItems(playlistID, list)
   } while (pageToken)
     
   Logger.log("Total videos: " + list.length);
-  Logger.log("Videos in playlist: " + inPlaylist.length);
   console.log("Total videos: " + list.length);
-  console.log("Videos in playlist: " + inPlaylist.length);
-  
+
   var notInPlaylist = list;
   for (x in inPlaylist)
   {
@@ -221,6 +229,10 @@ function findMissingItems(playlistID, list)
         notInPlaylist.splice(y,1);
     }
   }
+  
+  Logger.log("Videos in playlist: " + inPlaylist.length);
+  console.log("Videos in playlist: " + inPlaylist.length);
+
   Logger.log("Videos missing from playlist: " + notInPlaylist.length);
   console.log("Videos missing from playlist: " + notInPlaylist.length);
   return notInPlaylist;
@@ -233,8 +245,8 @@ function findMissingItems(playlistID, list)
 function searchByKeyword(sheetTitle) 
 {
   /*
-  var list = readValues('1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M', 'Rips featuring Nathaniel Welchert');
-  var missingVideos = findMissingItems('PLn8P5M1uNQk68CN4cN3i0b8l1OByyoM_0',list);
+  var list = getValues('1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M', 'Rips featuring Nathaniel Welchert');
+  var missingVideos = getMissingRips('PLn8P5M1uNQk68CN4cN3i0b8l1OByyoM_0',list);
   //*/
   
   var videoID;
@@ -247,7 +259,7 @@ function searchByKeyword(sheetTitle)
   var results = YouTube.Search.list('id,snippet', 
                                     {
                                       q: sheetTitle,//missingVideos[i],
-                                      maxResults: 2,
+                                      maxResults: 5,
                                       type: 'video',
                                       channelId: channelID
                                     });
@@ -256,7 +268,7 @@ function searchByKeyword(sheetTitle)
                         {
                           videoTitle = formatString(item.snippet.title);
                           Logger.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "\nSheet: " + sheetTitle.toLowerCase());
-                          console.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "\nSheet: " + sheetTitle.toLowerCase());
+                          //console.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "    \nSheet: " + sheetTitle.toLowerCase());
                           
                           if (videoTitle.toLowerCase().equals(sheetTitle.toLowerCase()))//missingVideos[i])
                           {
@@ -274,20 +286,19 @@ function searchByKeyword(sheetTitle)
 
 
 //
-function getPlaylistInfo(type)
+function getPlaylistInfo(sheetID, type)
 {
   //type = 'names';
-  var spreadsheet = SpreadsheetApp.openById(spreadsheetID);//SiIvaJokes
+  var spreadsheet = SpreadsheetApp.openById(sheetID);//SiIvaJokes
   var sheets = spreadsheet.getSheets();
   var info = [];
 
   for (var i = 0; i < sheets.length; i++) {
-    if (type == 'names')
+    if (type == 'names' && !sheets[i].getName().equals('Rips Featuring...'))
       info.push(sheets[i].getName());
-    else
+    else if (!sheets[i].getName().equals('Rips Featuring...'))
       info.push(sheets[i].getRange('D1').getValue());
   }
-  //Logger.log("Info: " + info);
   return info;
 }
 
@@ -299,11 +310,18 @@ function formatString(str)
 {
   str = str.replace(/&amp;/g, '&');
   str = str.replace(/&#39;/g, '\'');
-  str = str.replace(/&quo;/g, '\"');
+  str = str.replace(/&quot;/g, '\"');
   str = str.replace(/\[/g, '(');
   str = str.replace(/\]/g, ')');
+  str = str.replace(/\~/g, '-');
   str = str.replace(/(?:\r\n|\r|\n)/g, '');//Replaces line breaks
   str = str.replace(/☆/g, '');
   str = str.replace(/  /g, ' ');
+  str = str.replace(/#/g, '');
+
+  //str = str.replace(/ (removed)/gi, '');
+  //str = str.replace(/ (giivasunner)/gi, '');
+  //str = str.replace(/ (siivagunner)/gi, '');
+  str = str.replace(/ #1/g, '');
   return str;
 }

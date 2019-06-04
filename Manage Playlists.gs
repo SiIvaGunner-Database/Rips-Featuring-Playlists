@@ -1,8 +1,8 @@
 //Creates news playlists as the associated wiki is updated
-function createPlaylists() 
+function createPlaylist() 
 {
   var vidID = '';
-  var playlists = findMissingPlaylists();
+  var playlists = getMissingPlaylists();
   
   for (i = 1; i < 11; i++) 
   {
@@ -60,11 +60,14 @@ function createSheet(playlistID, sheetName)
   var spreadsheet = SpreadsheetApp.openById('1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M');//SiIvaJokes
   var newSheet = spreadsheet.getSheetByName(sheetName);
   
-  if (newSheet == null) {
+  if (newSheet == null)
+  {
     newSheet = spreadsheet.insertSheet();
     newSheet.setName(sheetName);
     newSheet.getRange('A1').setValue('=importxml("https://siivagunner.fandom.com/wiki/Category:' + formattedName + '", "//ul/li/a")');
     newSheet.getRange('D1').setValue(playlistID);
+    Logger.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
+    console.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
   }
 }
 
@@ -72,7 +75,7 @@ function createSheet(playlistID, sheetName)
 
 
 //
-function findMissingPlaylists()
+function getMissingPlaylists()
 {
   var spreadsheet = SpreadsheetApp.openById('1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk');//SiIvaInfo
   var sheet = spreadsheet.getSheetByName('Rips Featuring...');
@@ -81,7 +84,7 @@ function findMissingPlaylists()
   var cellRow = 79;
   var cont = true;
   var totalPlaylists = [];
-  var existingPlaylists = myPlaylists();
+  var existingPlaylists = getPlaylists();
   
   while (cont == true)
   {
@@ -127,7 +130,7 @@ function findMissingPlaylists()
 
 
 //
-function myPlaylists(sheetTitle) 
+function getPlaylists(sheetTitle) 
 {
   var videoID;
   var videoTitle;
