@@ -1,6 +1,5 @@
-var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';//SiIvaJokes
-var siivaInfo = '1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk';//SiIvaInfo
-
+var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
+var siivaInfo = '1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk';
 var removedList = getRemovedRips();
 
 //Updates playlist as the associated spreadsheet is updated
@@ -20,11 +19,10 @@ function playlistUpdate1()
     
     for (video in missingVideos)
     {
-      
       var vidNum = parseInt(video) + 1;
       Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
       console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      /*
+      //*
       var searchResult = searchByKeyword(missingVideos[video]);
       try
       {
@@ -64,7 +62,7 @@ function playlistUpdate1()
 
 function getRemovedRips()
 {
-  var removedSpreadsheet = SpreadsheetApp.openById(siivaInfo);//SiIvaInfo
+  var removedSpreadsheet = SpreadsheetApp.openById(siivaInfo);
   var removedListNames = getPlaylistInfo(siivaInfo, 'names');
   var removedList = [];
 
@@ -126,9 +124,9 @@ function getRemovedRips()
 function getValues(sheetName)
 {
   /*
-  sheetName = 'Rips featuring All Star';
+  sheetName = 'Rips featuring 7 GRAND DAD';
   //*/
-  var spreadsheet = SpreadsheetApp.openById(siivaJokes);//SiIvaJokes
+  var spreadsheet = SpreadsheetApp.openById(siivaJokes);
   var sheet = spreadsheet.getSheetByName(sheetName);
   var data = sheet.getDataRange();
   var values = data.getValues();
@@ -167,7 +165,7 @@ function getValues(sheetName)
             found = true;
           }
         }
-        if (!found)
+        if (!found && formatString(values[cellRow][0]).toLowerCase().indexOf('category:') === -1)
           list.push(formatString(values[cellRow][0]));
       }
       else
@@ -318,10 +316,10 @@ function formatString(str)
   str = str.replace(/☆/g, '');
   str = str.replace(/  /g, ' ');
   str = str.replace(/#/g, '');
+  str = str.replace(/−/g, '-');
 
   //str = str.replace(/ (removed)/gi, '');
   //str = str.replace(/ (giivasunner)/gi, '');
   //str = str.replace(/ (siivagunner)/gi, '');
-  str = str.replace(/ #1/g, '');
   return str;
 }
