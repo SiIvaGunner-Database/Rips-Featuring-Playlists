@@ -48,6 +48,7 @@ function createPlaylist()
       console.log(e);
     }
   }
+  sortGoogleSheets();
 }
 
 
@@ -174,8 +175,9 @@ function updateSheet(playlistID, sheetName, sheetID)
     sheet.getRange('D1').setValue(playlistID);
     Logger.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
     console.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
-  } else //update sheet import
+  } else // Update the sheet's importxml function
   {
+    // Credit to Mogsdad and Gerbus: https://stackoverflow.com/questions/33872967/periodically-refresh-importxml-spreadsheet-function/33875957
     var lock = LockService.getScriptLock();
     if (!lock.tryLock(5000)) return;
     
@@ -257,4 +259,35 @@ function updatePlaylistDesc()
                             });
     pageToken = playlists.nextPageToken;
   } while (pageToken);
+}
+
+
+
+
+// Credit to Amit Agarwal: https://ctrlq.org/code/20033-reorder-google-spreadsheet
+function sortGoogleSheets() 
+{
+  var sheetNames = [siivaJokes, siivaInfo];
+  for (name in sheetNames)
+  {
+    var spreadsheet = SpreadsheetApp.openById(sheetNames[name]);
+    var sheets = spreadsheet.getSheets();
+    
+    // Store all the worksheets in this array
+    var sheetNameArray = [];
+    
+    for (var i = 0; i < sheets.length; i++) 
+    {
+      sheetNameArray.push(sheets[i].getName());
+    }
+    
+    sheetNameArray.sort();
+    
+    // Reorder the sheets.
+    for( var j = 0; j < sheets.length; j++ )
+    {
+      spreadsheet.setActiveSheet(spreadsheet.getSheetByName(sheetNameArray[j]));
+      spreadsheet.moveActiveSheet(j + 1);
+    }
+  }
 }
