@@ -16,7 +16,9 @@ function createPlaylist()
         {
           snippet: {
             title: playlists[i],
-            description: 'SiIvagunner ' + playlists[i] + '.\nhttps://siivagunner.fandom.com/wiki/Category:' + playlists[i].replace(/ /g, '_')
+            description: "SiIvaGunner " + playlists[i].replace('Rips', 'rips') +
+            ". This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing." +
+            "\nhttps://siivagunner.fandom.com/wiki/Category:" + playlists[i].replace(/ /g, '_')
           },
           status: {
             privacyStatus: 'public'

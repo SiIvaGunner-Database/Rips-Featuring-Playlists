@@ -14,8 +14,7 @@ function playlistUpdate1()
   {
     Logger.log("Working on " + sheetName[i] + " [" + playlistID[i] + "]");
     console.log("Working on " + sheetName[i] + " [" + playlistID[i] + "]");
-    var list = getValues(sheetName[i]);
-    var missingVideos = getMissingRips(playlistID[i], list)
+    var missingVideos = getMissingRips(playlistID[i], sheetName[i])
     
     for (video in missingVideos)
     {
@@ -165,7 +164,7 @@ function getValues(sheetName)
             found = true;
           }
         }
-        if (!found && formatString(values[cellRow][0]).toLowerCase().indexOf('category:') === -1)
+        if (!found && formatString(values[cellRow][0]).toLowerCase().indexOf('category') === -1)
           list.push(formatString(values[cellRow][0]));
       }
       else
@@ -194,7 +193,7 @@ function getValues(sheetName)
 
 
 //Determines whether the video is already in the playlist
-function getMissingRips(playlistID, list) 
+function getMissingRips(playlistID, sheetName) 
 {
   /*
   playlistID = 'PLn8P5M1uNQk7Uj5GmdBcuxOAzxfWUac-Z';
@@ -203,6 +202,7 @@ function getMissingRips(playlistID, list)
   list = getValues(siivaJokes, sheetName);
   //*/
   
+  var list = getValues(sheetName);
   var inPlaylist = [];
   var pageToken;
   
@@ -317,7 +317,10 @@ function formatString(str)
   str = str.replace(/  /g, ' ');
   str = str.replace(/#/g, '');
   str = str.replace(/−/g, '-');
-
+  str = str.replace(/Ultimate/g, 'UItimate');
+  str = str.replace(/N----/g, 'Nigga');
+  str = str.replace(/[^\w\s]/gi, '')
+  
   //str = str.replace(/ (removed)/gi, '');
   //str = str.replace(/ (giivasunner)/gi, '');
   //str = str.replace(/ (siivagunner)/gi, '');
