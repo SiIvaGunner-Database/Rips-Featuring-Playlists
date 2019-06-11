@@ -2,9 +2,11 @@
 
 A Google Script file that creates and manages YouTube playlists from the corresponding category data imported to Google Sheets from the SiIvaGunner wiki.
 
-SiIvaInfo: https://docs.google.com/spreadsheets/d/1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk/edit?usp=sharing
+Google Apps Script: https://script.google.com/d/1sb3p6A6g4fxL5DQwjKOEkImI5MI8QaXvcSbnJSXGe4xjC09nEiaxyQTN/edit?usp=sharing
 
-SiIvaJokes: https://docs.google.com/spreadsheets/d/1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M/edit?usp=sharing
+SiIvaInfo Spreadsheet: https://docs.google.com/spreadsheets/d/1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk/edit?usp=sharing
+
+SiIvaJokes Spreadsheet: https://docs.google.com/spreadsheets/d/1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M/edit?usp=sharing
 
 SiIvaGunner Wiki: https://siivagunner.fandom.com/wiki/SiIvaGunner_Wikia
 
