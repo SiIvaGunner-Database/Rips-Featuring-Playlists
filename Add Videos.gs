@@ -292,10 +292,13 @@ function getPlaylistInfo(sheetID, type)
   var info = [];
 
   for (var i = 0; i < sheets.length; i++) {
-    if (type == 'names' && !sheets[i].getName().equals('Rips Featuring...'))
-      info.push(sheets[i].getName());
-    else if (!sheets[i].getName().equals('Rips Featuring...'))
-      info.push(sheets[i].getRange('D1').getValue());
+    if (!sheets[i].getName().equals('My Playlists') && !sheets[i].getName().equals('Rips Featuring...'))
+    {
+      if (type == 'names')
+        info.push(sheets[i].getName());
+      else
+        info.push(sheets[i].getRange('D1').getValue());
+    }
   }
   return info;
 }
@@ -319,10 +322,7 @@ function formatString(str)
   str = str.replace(/−/g, '-');
   str = str.replace(/Ultimate/g, 'UItimate');
   str = str.replace(/N----/g, 'Nigga');
-  str = str.replace(/[^\w\s]/gi, '')
+  str = str.replace(/[^\w\s]/gi, '');
   
-  //str = str.replace(/ (removed)/gi, '');
-  //str = str.replace(/ (giivasunner)/gi, '');
-  //str = str.replace(/ (siivagunner)/gi, '');
   return str;
 }

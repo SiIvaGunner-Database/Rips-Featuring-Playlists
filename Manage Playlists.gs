@@ -1,11 +1,15 @@
 var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
 var siivaInfo = "1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk";
+var glNum;
 
 //Creates news playlists as the associated wiki is updated
 function createPlaylist() 
 {
   var vidID = '';
   var playlists = getMissingPlaylists();
+  
+  var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
+  var myPlaylistsSheet = myPlaylistsSpreadsheet.getSheetByName("My Playlists");
   
   for (i = 1; i < 11; i++) 
   {
@@ -39,14 +43,20 @@ function createPlaylist()
         }
       };
       
+      myPlaylistsSheet.getRange(glNum + i, 1).setValue(playlists[i]);
+      myPlaylistsSheet.getRange(glNum + i, 4).setValue(newPlaylist.id);
+      
+      if (i == 10)
+        myPlaylistsSheet.getRange(glNum + i + 1, 1).setValue("Stop");
+
       updateSheet(newPlaylist.id, playlists[i], siivaJokes);
-      //*/
     } catch (e)
     {
       i = 11;
       Logger.log(e);
       console.log(e);
     }
+    //*/
   }
   sortGoogleSheets();
 }
@@ -109,7 +119,7 @@ function getMissingPlaylists()
   
   Logger.log("Missing playlists: " + missingPlaylists.length);
   console.log("Missing playlists: " + missingPlaylists.length);
-  //console.log("Missing playlists: " + missingPlaylists);
+  console.log("Missing playlists: " + missingPlaylists);
   return missingPlaylists;
 }
 
@@ -119,36 +129,76 @@ function getMissingPlaylists()
 //
 function getPlaylists() 
 {
+  var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
+  var myPlaylistsSheet = myPlaylistsSpreadsheet.getSheetByName("My Playlists");
+  var myPlaylistsRange = myPlaylistsSheet.getDataRange();
+  var myPlaylistsValues = myPlaylistsRange.getValues();
+  var myPlaylists = [];
+  var row = 1;
+  
   var videoID;
   var videoTitle;
-  var index = 0;
+  var index = 1;
   var pageToken;
   var playlistID = [];
   var playlistTitle = [];
   
+  //*
+  var cont = true;
+  
+  while (cont)
+  {
+    if (myPlaylistsValues[row][0] != "Stop")
+    {
+      var title = myPlaylistsValues[row][0];
+      var id = myPlaylistsValues[row][3];
+      playlistID.push(id);
+      playlistTitle.push(title);
+      //updateSheet(id, title, siivaJokes);
+      row++;
+    } else
+    {
+      glNum = row;
+      cont = false
+    }
+  }
+  //*/
+  
+  /*
   do {
-    var playlists = YouTube.Playlists.list('snippet', 
-                                           {
-                                             maxResults: 50,
-                                             type: 'playlist',
-                                             mine: true,
-                                             pageToken: pageToken
-                                           });
-    
-    playlists.items.forEach(function(item)
-                            {
-                              var desc = item.snippet.description.toLowerCase().toString();
-                              if (desc.indexOf('siivagunner') !== -1)
-                              {
-                                var title = item.snippet.title.toString();
-                                var id = item.id;
-                                updateSheet(id, title, siivaJokes);
-                                playlistID.push(id);
-                                playlistTitle.push(title);
-                              }
-                            });
-    pageToken = playlists.nextPageToken;
+  var playlists = YouTube.Playlists.list('snippet', 
+  {
+  maxResults: 50,
+  type: 'playlist',
+  mine: true,
+  pageToken: pageToken
+  });
+  
+  playlists.items.forEach(function(item)
+  {
+  var desc = item.snippet.description.toLowerCase().toString();
+  if (desc.indexOf('siivagunner') !== -1)
+  {
+  var title = item.snippet.title.toString();
+  var id = item.id;
+  
+  var a = "A" + row;
+  var b = "B" + row;
+  Logger.log(a);
+  
+  myPlaylistsSheet.getRange(row, 1).setValue(title);
+  myPlaylistsSheet.getRange(row, 4).setValue(id);
+  
+  row++;
+  
+  updateSheet(id, title, siivaJokes);
+  playlistID.push(id);
+  playlistTitle.push(title);
+  }
+  });
+  pageToken = playlists.nextPageToken;
   } while (pageToken);
+  //*/
   
   //Logger.log(playlistTitle);
   return [playlistID, playlistTitle];
@@ -165,6 +215,7 @@ function updateSheet(playlistID, sheetName, sheetID)
   
   var formattedName = sheetName.replace(/ /g, '_');
   var spreadsheet = SpreadsheetApp.openById(sheetID);
+  Logger.log(sheetName);
   var sheet = spreadsheet.getSheetByName(sheetName);
   
   if (sheet == null)
@@ -177,25 +228,33 @@ function updateSheet(playlistID, sheetName, sheetID)
     console.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
   } else // Update the sheet's importxml function
   {
-    // Credit to Mogsdad and Gerbus: https://stackoverflow.com/questions/33872967/periodically-refresh-importxml-spreadsheet-function/33875957
-    var lock = LockService.getScriptLock();
-    if (!lock.tryLock(5000)) return;
-    
-    var re = /.*[^a-z0-9]import(?:xml|data|feed|html|range)\(.*/gi;
-    var re2 = /((\?|&)(update=[0-9]*))/gi;
-    var re3 = /(",)/gi;
-    var dataRange = sheet.getDataRange();
-    var formula = dataRange.getFormulas();
-    var time = new Date().getTime();
-    var content = formula[0][0];
-    var match = content.search(re);
-    
-    var updatedContent = content.toString().replace(re2,"$2update=" + time);
-    if (updatedContent == content) 
-      updatedContent = content.toString().replace(re3,"?update=" + time + "$1");
-    
-    sheet.getRange('A1').setFormula(updatedContent);
-    lock.releaseLock();
+    try {
+      // Credit to Mogsdad and Gerbus: https://stackoverflow.com/questions/33872967/periodically-refresh-importxml-spreadsheet-function/33875957
+      var lock = LockService.getScriptLock();
+      if (!lock.tryLock(5000)) return;
+      
+      var re = /.*[^a-z0-9]import(?:xml|data|feed|html|range)\(.*/gi;
+      var re2 = /((\?|&)(update=[0-9]*))/gi;
+      var re3 = /(",)/gi;
+      var dataRange = sheet.getDataRange();
+      var formula = dataRange.getFormulas();
+      var time = new Date().getTime();
+      var content = formula[0][0];
+      var match = content.search(re);
+      
+      var updatedContent = content.toString().replace(re2,"$2update=" + time);
+      if (updatedContent == content) 
+        updatedContent = content.toString().replace(re3,"?update=" + time + "$1");
+      
+      sheet.getRange('A1').setFormula(updatedContent);
+      lock.releaseLock();
+    } catch (e)
+    {
+      Logger.log(e);
+    } finally // Credit to beano. https://stackoverflow.com/questions/53277135/there-are-too-many-lockservice-operations-against-the-same-script
+    {
+      //PropertiesService.getDocumentProperties().deleteProperty('lock');
+    }
   }
 }
 
@@ -219,7 +278,7 @@ function updatePlaylistDesc()
                             {
                               var desc = item.snippet.description.toLowerCase().toString();
                               if (desc.indexOf('siivagunner') !== -1)
-                              //if (item.snippet.description.indexOf('SiIvaGunner') !== -1)
+                                //if (item.snippet.description.indexOf('SiIvaGunner') !== -1)
                               {
                                 var start = "SiIvaGunner "+ item.snippet.title.replace('Rips', 'rips') + ". ";
                                 var extra = "";
@@ -247,7 +306,7 @@ function updatePlaylistDesc()
                                     break;
                                 }
                                 var newDesc = start + extra + middle + end;
-
+                                
                                 if (newDesc != item.snippet.description)
                                 {
                                   item.snippet.description = newDesc;
