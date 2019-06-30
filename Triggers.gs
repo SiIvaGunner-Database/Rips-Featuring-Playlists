@@ -1,3 +1,5 @@
+// Functions for creating triggers to run the script automatically.
+
 function playlistUpdateTrigger()
 {
   ScriptApp.newTrigger('playlistUpdate')

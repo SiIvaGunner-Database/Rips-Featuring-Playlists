@@ -2,7 +2,7 @@ var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
 var siivaInfo = '1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk';
 var removedList = getRemovedRips();
 
-//Updates playlist as the associated spreadsheet is updated
+// Adds new videos to playlists as their associated joke category spreadsheets are updated.
 function playlistUpdate1()
 {
   var sheetName = getPlaylistInfo(siivaJokes, 'names');
@@ -59,6 +59,7 @@ function playlistUpdate1()
 
 
 
+// Reads the values of all rips that are in any removed categories on the wiki.
 function getRemovedRips()
 {
   var removedSpreadsheet = SpreadsheetApp.openById(siivaInfo);
@@ -108,18 +109,19 @@ function getRemovedRips()
     startRow = 60;
     cont = true;
   }
+  /*
   for (d in removedList)
   {
-    //Logger.log("Formatted: " + formatString(removedList[d]));
+    Logger.log("Formatted: " + formatString(removedList[d]));
   }
-  
+  //*/
   return removedList
 }
 
 
 
 
-//Finds the the highest cell row with content in the sheet
+// Reads the values from a sheet containing rips from a joke category.
 function getValues(sheetName)
 {
   /*
@@ -192,7 +194,7 @@ function getValues(sheetName)
 
 
 
-//Determines whether the video is already in the playlist
+// Determines what rips are missing from the playlist.
 function getMissingRips(playlistID, sheetName) 
 {
   /*
@@ -239,7 +241,7 @@ function getMissingRips(playlistID, sheetName)
 
 
 
-//Searches for the video found in the sheet
+// Searches YouTube for the specified video.
 function searchByKeyword(sheetTitle) 
 {
   /*
@@ -283,7 +285,7 @@ function searchByKeyword(sheetTitle)
 
 
 
-//
+// Retrieves either the playlist's ID or name from its respective spreadsheet.
 function getPlaylistInfo(sheetID, type)
 {
   //type = 'names';
@@ -306,7 +308,7 @@ function getPlaylistInfo(sheetID, type)
 
 
 
-//
+// Replaces special characters and censored words.
 function formatString(str)
 {
   str = str.replace(/&amp;/g, '&');

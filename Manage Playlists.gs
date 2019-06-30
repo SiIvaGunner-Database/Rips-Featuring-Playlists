@@ -2,7 +2,7 @@ var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
 var siivaInfo = "1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk";
 var glNum;
 
-//Creates news playlists as the associated wiki is updated
+// Creates news playlists as the associated wiki is updated.
 function createPlaylist() 
 {
   var vidID = '';
@@ -58,13 +58,13 @@ function createPlaylist()
     }
     //*/
   }
-  sortGoogleSheets();
+  //sortGoogleSheets();
 }
 
 
 
 
-//
+// Determines which playlists have not been created yet.
 function getMissingPlaylists()
 {
   var spreadsheet = SpreadsheetApp.openById(siivaInfo);
@@ -126,7 +126,7 @@ function getMissingPlaylists()
 
 
 
-//
+// Reads the list of playlists I've created from a spreadsheet.
 function getPlaylists() 
 {
   var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
@@ -207,7 +207,7 @@ function getPlaylists()
 
 
 
-//
+// Adds ImportXML and playlist ID to a new sheet or updates ImportXML on an old sheet.
 function updateSheet(playlistID, sheetName, sheetID)
 {
   //playlistID = 'PLn8P5M1uNQk4e8Y-LVtnoZ4rjsHOF3gMj';
@@ -261,7 +261,7 @@ function updateSheet(playlistID, sheetName, sheetID)
 
 
 
-//
+// Updates all playlist descriptions.
 function updatePlaylistDesc() 
 {
   var pageToken;
@@ -323,7 +323,8 @@ function updatePlaylistDesc()
 
 
 
-// Credit to Amit Agarwal: https://ctrlq.org/code/20033-reorder-google-spreadsheet
+// Spreadsheet sorting function credit to Amit Agarwal.
+// https://ctrlq.org/code/20033-reorder-google-spreadsheet
 function sortGoogleSheets() 
 {
   var sheetNames = [siivaJokes, siivaInfo];
