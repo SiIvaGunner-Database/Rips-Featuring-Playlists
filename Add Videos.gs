@@ -8,7 +8,6 @@ function playlistUpdate1()
   var sheetNames = getPlaylistInfo('sheetNames');
   var playlistIDs = getPlaylistInfo('playlistIDs');
   var spreadsheetIDs = getPlaylistInfo('spreadsheetIDs');
-  //Logger.log(sheetNames + "\n" + spreadsheetIDs);
 
   var successCount = 0;
   var failCount = 0;
@@ -24,7 +23,7 @@ function playlistUpdate1()
       var vidNum = parseInt(video) + 1;
       Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
       console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      /*
+      //*
       var searchResult = searchByKeyword(missingVideos[video]);
       try
       {
@@ -66,7 +65,7 @@ function playlistUpdate1()
 function getRemovedRips()
 {
   var removedSpreadsheet = SpreadsheetApp.openById(siivaInfo);
-  var removedListNames = getPlaylistInfo(siivaInfo, 'names');
+  var removedListNames = ['9/11 2016', 'GiIvaSunner non-reuploaded', 'Removed Green de la Bean rips', 'Removed Rips', 'Unlisted Rips', 'Unlisted videos'];
   var removedList = [];
 
   var startRow = 60;
@@ -130,11 +129,11 @@ function getValues(sheetName, spreadsheetID)
   /*
   sheetName = 'Rips featuring 7 GRAND DAD';
   //*/
-  Logger.log(spreadsheetID);
   var spreadsheet = SpreadsheetApp.openById(spreadsheetID);
   var sheet = spreadsheet.getSheetByName(sheetName);
   var data = sheet.getDataRange();
   var values = data.getValues();
+
   var cellRow = 60;
   var list = [];
   var removedRips = [];
