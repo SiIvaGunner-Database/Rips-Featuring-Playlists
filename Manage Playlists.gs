@@ -10,6 +10,7 @@ function createPlaylist()
   
   var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
   var myPlaylistsSheet = myPlaylistsSpreadsheet.getSheetByName("My Playlists");
+  Logger.log(playlists[0]);
   
   for (i = 1; i < 11; i++) 
   {
@@ -79,7 +80,7 @@ function getMissingPlaylists()
   var cellRow = 79;
   var cont = true;
   var totalPlaylists = [];
-  var existingPlaylists = getPlaylists();
+  var existingPlaylists = getPlaylistInfo('sheetNames');
   
   while (cont == true)
   {
@@ -109,13 +110,13 @@ function getMissingPlaylists()
   {
     for (i in missingPlaylists)
     {
-      if (existingPlaylists[1][row].toLowerCase().equals(missingPlaylists[i].toLowerCase()) || missingPlaylists[i].toLowerCase().equals("jojokes"))
+      if (existingPlaylists[row].toLowerCase().equals(missingPlaylists[i].toLowerCase()) || missingPlaylists[i].toLowerCase().equals("jojokes"))
       {
         missingPlaylists.splice(i,1);
       }
     }
     row++;
-  } while (existingPlaylists[1][row]);
+  } while (existingPlaylists[row]);
   
   Logger.log("Missing playlists: " + missingPlaylists.length);
   console.log("Missing playlists: " + missingPlaylists.length);
@@ -127,33 +128,38 @@ function getMissingPlaylists()
 
 
 // Reads the list of playlists I've created from a spreadsheet.
-function getPlaylists() 
+function getPlaylistInfo(type) 
 {
   var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
   var myPlaylistsSheet = myPlaylistsSpreadsheet.getSheetByName("My Playlists");
   var myPlaylistsRange = myPlaylistsSheet.getDataRange();
   var myPlaylistsValues = myPlaylistsRange.getValues();
   var myPlaylists = [];
+  
+  var info = [];
   var row = 1;
-  
-  var videoID;
-  var videoTitle;
-  var index = 1;
-  var pageToken;
-  var playlistID = [];
-  var playlistTitle = [];
-  
-  //*
   var cont = true;
   
+  //*  
   while (cont)
   {
     if (myPlaylistsValues[row][0] != "Stop")
     {
-      var title = myPlaylistsValues[row][0];
-      var id = myPlaylistsValues[row][3];
-      playlistID.push(id);
-      playlistTitle.push(title);
+      switch(type)
+      {
+        case 'sheetNames':
+          var title = myPlaylistsValues[row][0];
+          info.push(title);
+          break;
+        case 'playlistIDs':
+          var playlistID = myPlaylistsValues[row][3];
+          info.push(playlistID);
+          break;
+        case 'spreadsheetIDs':
+          var spreadsheetID = myPlaylistsValues[row][6];
+          info.push(spreadsheetID);
+          break;
+      }
       //updateSheet(id, title, siivaJokes);
       row++;
     } else
@@ -164,44 +170,7 @@ function getPlaylists()
   }
   //*/
   
-  /*
-  do {
-  var playlists = YouTube.Playlists.list('snippet', 
-  {
-  maxResults: 50,
-  type: 'playlist',
-  mine: true,
-  pageToken: pageToken
-  });
-  
-  playlists.items.forEach(function(item)
-  {
-  var desc = item.snippet.description.toLowerCase().toString();
-  if (desc.indexOf('siivagunner') !== -1)
-  {
-  var title = item.snippet.title.toString();
-  var id = item.id;
-  
-  var a = "A" + row;
-  var b = "B" + row;
-  Logger.log(a);
-  
-  myPlaylistsSheet.getRange(row, 1).setValue(title);
-  myPlaylistsSheet.getRange(row, 4).setValue(id);
-  
-  row++;
-  
-  updateSheet(id, title, siivaJokes);
-  playlistID.push(id);
-  playlistTitle.push(title);
-  }
-  });
-  pageToken = playlists.nextPageToken;
-  } while (pageToken);
-  //*/
-  
-  //Logger.log(playlistTitle);
-  return [playlistID, playlistTitle];
+  return info;
 }
 
 
@@ -212,10 +181,9 @@ function updateSheet(playlistID, sheetName, sheetID)
 {
   //playlistID = 'PLn8P5M1uNQk4e8Y-LVtnoZ4rjsHOF3gMj';
   //sheetName = 'Rips featuring Bad Apple!!';
-  
+  Logger.log(sheetName);
   var formattedName = sheetName.replace(/ /g, '_');
   var spreadsheet = SpreadsheetApp.openById(sheetID);
-  Logger.log(sheetName);
   var sheet = spreadsheet.getSheetByName(sheetName);
   
   if (sheet == null)
@@ -248,6 +216,8 @@ function updateSheet(playlistID, sheetName, sheetID)
       
       sheet.getRange('A1').setFormula(updatedContent);
       lock.releaseLock();
+      Logger.log("Updated " + sheetName);
+      console.log("Updated " + sheetName);
     } catch (e)
     {
       Logger.log(e);

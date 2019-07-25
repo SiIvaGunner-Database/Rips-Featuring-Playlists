@@ -1,27 +1,30 @@
-var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
+//var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
 var siivaInfo = '1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk';
 var removedList = getRemovedRips();
 
 // Adds new videos to playlists as their associated joke category spreadsheets are updated.
 function playlistUpdate1()
 {
-  var sheetName = getPlaylistInfo(siivaJokes, 'names');
-  var playlistID = getPlaylistInfo(siivaJokes, 'IDs');
+  var sheetNames = getPlaylistInfo('sheetNames');
+  var playlistIDs = getPlaylistInfo('playlistIDs');
+  var spreadsheetIDs = getPlaylistInfo('spreadsheetIDs');
+  //Logger.log(sheetNames + "\n" + spreadsheetIDs);
+
   var successCount = 0;
   var failCount = 0;
   
-  for (i in sheetName)
+  for (i in sheetNames)
   {
-    Logger.log("Working on " + sheetName[i] + " [" + playlistID[i] + "]");
-    console.log("Working on " + sheetName[i] + " [" + playlistID[i] + "]");
-    var missingVideos = getMissingRips(playlistID[i], sheetName[i])
+    Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
+    console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
+    var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i], spreadsheetIDs[i])
     
     for (video in missingVideos)
     {
       var vidNum = parseInt(video) + 1;
       Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
       console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      //*
+      /*
       var searchResult = searchByKeyword(missingVideos[video]);
       try
       {
@@ -29,7 +32,7 @@ function playlistUpdate1()
         ({
           snippet: 
           {
-            playlistId: playlistID[i], 
+            playlistId: playlistIDs[i], 
             resourceId: 
             {
               kind: "youtube#video",
@@ -39,8 +42,8 @@ function playlistUpdate1()
         }, "snippet");
         
         successCount++;
-        Logger.log("Video added to " + sheetName[i])
-        console.log("Video added to " + sheetName[i])
+        Logger.log("Video added to " + sheetNames[i])
+        console.log("Video added to " + sheetNames[i])
       } catch (e)
       {
         Logger.log("Video failed to insert.");
@@ -115,19 +118,20 @@ function getRemovedRips()
     Logger.log("Formatted: " + formatString(removedList[d]));
   }
   //*/
-  return removedList
+  return removedList;
 }
 
 
 
 
 // Reads the values from a sheet containing rips from a joke category.
-function getValues(sheetName)
+function getValues(sheetName, spreadsheetID)
 {
   /*
   sheetName = 'Rips featuring 7 GRAND DAD';
   //*/
-  var spreadsheet = SpreadsheetApp.openById(siivaJokes);
+  Logger.log(spreadsheetID);
+  var spreadsheet = SpreadsheetApp.openById(spreadsheetID);
   var sheet = spreadsheet.getSheetByName(sheetName);
   var data = sheet.getDataRange();
   var values = data.getValues();
@@ -195,7 +199,7 @@ function getValues(sheetName)
 
 
 // Determines what rips are missing from the playlist.
-function getMissingRips(playlistID, sheetName) 
+function getMissingRips(sheetName, playlistID, spreadsheetID) 
 {
   /*
   playlistID = 'PLn8P5M1uNQk7Uj5GmdBcuxOAzxfWUac-Z';
@@ -204,7 +208,7 @@ function getMissingRips(playlistID, sheetName)
   list = getValues(siivaJokes, sheetName);
   //*/
   
-  var list = getValues(sheetName);
+  var list = getValues(sheetName, spreadsheetID);
   var inPlaylist = [];
   var pageToken;
   
@@ -282,28 +286,6 @@ function searchByKeyword(sheetTitle)
   return [videoID, videoTitle];
 }
 
-
-
-
-// Retrieves either the playlist's ID or name from its respective spreadsheet.
-function getPlaylistInfo(sheetID, type)
-{
-  //type = 'names';
-  var spreadsheet = SpreadsheetApp.openById(sheetID);//SiIvaJokes
-  var sheets = spreadsheet.getSheets();
-  var info = [];
-
-  for (var i = 0; i < sheets.length; i++) {
-    if (!sheets[i].getName().equals('My Playlists') && !sheets[i].getName().equals('Rips Featuring...'))
-    {
-      if (type == 'names')
-        info.push(sheets[i].getName());
-      else
-        info.push(sheets[i].getRange('D1').getValue());
-    }
-  }
-  return info;
-}
 
 
 
