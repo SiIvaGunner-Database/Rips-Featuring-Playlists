@@ -1,17 +1,17 @@
 // Functions for creating triggers to run the script automatically.
 
-function playlistUpdateTrigger()
+function addVideosToPlaylistsTrigger()
 {
-  ScriptApp.newTrigger('playlistUpdate')
+  ScriptApp.newTrigger('addVideosToPlaylists')
   .timeBased()
   .onWeekDay(ScriptApp.WeekDay.SUNDAY)
   .atHour(1)
   .create();
 }
 
-function playlistUpdateDailyTrigger()
+function addVideosToPlaylistsDailyTrigger()
 {
-  ScriptApp.newTrigger('playlistUpdate')
+  ScriptApp.newTrigger('addVideosToPlaylists')
   .timeBased()
   .everyDays(1)
   .atHour(0)

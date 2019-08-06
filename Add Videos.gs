@@ -1,55 +1,66 @@
-//var siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
 var siivaInfo = '1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk';
 var removedList = getRemovedRips();
 
 // Adds new videos to playlists as their associated joke category spreadsheets are updated.
-function playlistUpdate1()
+function addVideosToPlaylists()
 {
-  var sheetNames = getPlaylistInfo('sheetNames');
-  var playlistIDs = getPlaylistInfo('playlistIDs');
-  var spreadsheetIDs = getPlaylistInfo('spreadsheetIDs');
+  var sheetNames = getSheetInfo('sheetNames');
+  var playlistIDs = getSheetInfo('playlistIDs');
+  var spreadsheetIDs = getSheetInfo('spreadsheetIDs');
 
   var successCount = 0;
   var failCount = 0;
   
   for (i in sheetNames)
   {
-    Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
-    console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
-    var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i], spreadsheetIDs[i])
-    
-    for (video in missingVideos)
+    if (sheetNames[i] != 'Rips featuring kazoo')
     {
-      var vidNum = parseInt(video) + 1;
-      Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      //*
-      var searchResult = searchByKeyword(missingVideos[video]);
-      try
+      Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
+      console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
+      var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i], spreadsheetIDs[i])
+      
+      for (video in missingVideos)
       {
-        YouTube.PlaylistItems.insert
-        ({
-          snippet: 
-          {
-            playlistId: playlistIDs[i], 
-            resourceId: 
-            {
-              kind: "youtube#video",
-              videoId: searchResult[0]
-            }
-          }
-        }, "snippet");
+        var vidNum = parseInt(video) + 1;
+        Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
+        console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
+        //*
+        var searchResult = searchForVideo(missingVideos[video]);
         
-        successCount++;
-        Logger.log("Video added to " + sheetNames[i])
-        console.log("Video added to " + sheetNames[i])
-      } catch (e)
-      {
-        Logger.log("Video failed to insert.");
-        console.log("Video failed to insert.");
-        failCount++;
+        if (searchResult[1] != null)
+        {
+          try
+          {
+            YouTube.PlaylistItems.insert
+            ({
+              snippet: 
+              {
+                playlistId: playlistIDs[i], 
+                resourceId: 
+                {
+                  kind: "youtube#video",
+                  videoId: searchResult[0]
+                }
+              }
+            }, "snippet");
+            
+            Logger.log("Video added to " + sheetNames[i])
+            console.log("Video added to " + sheetNames[i])
+            successCount++;
+          } catch (e)
+          {
+            Logger.log("Video failed to insert.");
+            console.log("Video failed to insert.");
+            failCount++;
+          }
+        } else
+        {
+          Logger.log("Video not found.");
+          console.log("Video not found.");
+          failCount++;
+        }
+        //*/
       }
-      //*/
     }
   }
   Logger.log("Videos added to playlists: " + successCount);
@@ -96,7 +107,7 @@ function getRemovedRips()
       {
         if (removedValues[removedRow][0] != "")
         {
-          removedList.push(formatString(removedValues[removedRow][0]));
+          removedList.push(formatVideoTitle(removedValues[removedRow][0]));
         }
         else
           cont = false;
@@ -114,7 +125,7 @@ function getRemovedRips()
   /*
   for (d in removedList)
   {
-    Logger.log("Formatted: " + formatString(removedList[d]));
+    Logger.log("Formatted: " + formatVideoTitle(removedList[d]));
   }
   //*/
   return removedList;
@@ -124,7 +135,7 @@ function getRemovedRips()
 
 
 // Reads the values from a sheet containing rips from a joke category.
-function getValues(sheetName, spreadsheetID)
+function getCategoryRips(sheetName, spreadsheetID)
 {
   /*
   sheetName = 'Rips featuring 7 GRAND DAD';
@@ -162,15 +173,15 @@ function getValues(sheetName, spreadsheetID)
         found = false;
         for (r in removedList)
         {
-          if (removedList[r].toLowerCase().equals(formatString(values[cellRow][0]).toLowerCase()))
+          if (removedList[r].toLowerCase().equals(formatVideoTitle(values[cellRow][0]).toLowerCase()))
           {
             if (!found)
               removedRips.push(removedList[r]);
             found = true;
           }
         }
-        if (!found && formatString(values[cellRow][0]).toLowerCase().indexOf('category') === -1)
-          list.push(formatString(values[cellRow][0]));
+        if (!found && formatVideoTitle(values[cellRow][0]).toLowerCase().indexOf('category') === -1)
+          list.push(formatVideoTitle(values[cellRow][0]));
       }
       else
       {
@@ -201,13 +212,12 @@ function getValues(sheetName, spreadsheetID)
 function getMissingRips(sheetName, playlistID, spreadsheetID) 
 {
   /*
-  playlistID = 'PLn8P5M1uNQk7Uj5GmdBcuxOAzxfWUac-Z';
-  siivaJokes = '1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M';
   sheetName = 'Rips with Sentence Mixing';
-  list = getValues(siivaJokes, sheetName);
+  playlistID = 'PLn8P5M1uNQk7Uj5GmdBcuxOAzxfWUac-Z';
+  spreadsheetID = '';
   //*/
   
-  var list = getValues(sheetName, spreadsheetID);
+  var list = getCategoryRips(sheetName, spreadsheetID);
   var inPlaylist = [];
   var pageToken;
   
@@ -215,7 +225,7 @@ function getMissingRips(sheetName, playlistID, spreadsheetID)
   {
     var query = YouTube.PlaylistItems.list('snippet', {maxResults: 50, playlistId: playlistID, pageToken: pageToken});
     
-    query.items.forEach(function(item) {inPlaylist.push(formatString(item.snippet.title))});
+    query.items.forEach(function(item) {inPlaylist.push(formatVideoTitle(item.snippet.title))});
     
     pageToken = query.nextPageToken;
   } while (pageToken)
@@ -245,20 +255,16 @@ function getMissingRips(sheetName, playlistID, spreadsheetID)
 
 
 // Searches YouTube for the specified video.
-function searchByKeyword(sheetTitle) 
+function searchForVideo(sheetTitle) 
 {
-  /*
-  var list = getValues('1NJ6cDpib0VlORJfCiqTBcOswlu6uWRTzxeXgrzKnT_M', 'Rips featuring Nathaniel Welchert');
-  var missingVideos = getMissingRips('PLn8P5M1uNQk68CN4cN3i0b8l1OByyoM_0',list);
-  //*/
-  
   var videoID;
   var videoTitle;
   var channelID = 'UC9ecwl3FTG66jIKA9JRDtmg'; //SiIvaGunner
   var count = 0;
   
-  //for (i in missingVideos) 
-  //{
+  Logger.log("[" + channelID + "] " + sheetTitle);
+  console.log("[" + channelID + "] " + sheetTitle);
+  
   var results = YouTube.Search.list('id,snippet', 
                                     {
                                       q: sheetTitle,//missingVideos[i],
@@ -269,9 +275,9 @@ function searchByKeyword(sheetTitle)
   
   results.items.forEach(function(item)
                         {
-                          videoTitle = formatString(item.snippet.title);
+                          videoTitle = formatVideoTitle(item.snippet.title);
                           Logger.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "\nSheet: " + sheetTitle.toLowerCase());
-                          //console.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "    \nSheet: " + sheetTitle.toLowerCase());
+                          console.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "    \nSheet: " + sheetTitle.toLowerCase());
                           
                           if (videoTitle.toLowerCase().equals(sheetTitle.toLowerCase()))//missingVideos[i])
                           {
@@ -279,7 +285,6 @@ function searchByKeyword(sheetTitle)
                             count++;
                           }
                         });
-  //}
   
   //Logger.log(count + " out of " + missingVideos.length + " matches found.");
   return [videoID, videoTitle];
@@ -290,7 +295,7 @@ function searchByKeyword(sheetTitle)
 
 
 // Replaces special characters and censored words.
-function formatString(str)
+function formatVideoTitle(str)
 {
   str = str.replace(/&amp;/g, '&');
   str = str.replace(/&#39;/g, '\'');
@@ -300,11 +305,19 @@ function formatString(str)
   str = str.replace(/\~/g, '-');
   str = str.replace(/(?:\r\n|\r|\n)/g, '');//Replaces line breaks
   str = str.replace(/☆/g, '');
-  str = str.replace(/  /g, ' ');
+  str = str.replace(/ /g, '');
   str = str.replace(/#/g, '');
   str = str.replace(/−/g, '-');
+  str = str.replace(/ʖ/g, '');
   str = str.replace(/Ultimate/g, 'UItimate');
   str = str.replace(/N----/g, 'Nigga');
+  /*
+  str = str.replace(/\/Bean/g, '');
+  str = str.replace(/\/Grand Dad/g, '');
+  str = str.replace(/\/Nozomi/g, '');
+  str = str.replace(/\/Original/g, '');
+  str = str.replace(/\/Steve Harvey/g, '');
+  //*/
   str = str.replace(/[^\w\s]/gi, '');
   
   return str;
