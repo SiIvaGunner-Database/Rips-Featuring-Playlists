@@ -1,4 +1,4 @@
-# SiIvaGunner-Joke-Playlists
+# SiIvaGunner Rips Featuring Playlists
 
 A Google Script file that creates and manages YouTube playlists from the corresponding category data imported to Google Sheets from the SiIvaGunner wiki.
 
