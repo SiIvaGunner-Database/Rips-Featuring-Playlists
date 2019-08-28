@@ -7,7 +7,7 @@ function addVideosToPlaylists()
   var sheetNames = getSheetInfo('sheetNames');
   var playlistIDs = getSheetInfo('playlistIDs');
   var spreadsheetIDs = getSheetInfo('spreadsheetIDs');
-
+  
   var successCount = 0;
   var failCount = 0;
   
@@ -55,8 +55,8 @@ function addVideosToPlaylists()
           }
         } else
         {
-          Logger.log("Video not found.");
-          console.log("Video not found.");
+          Logger.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
+          console.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
           failCount++;
         }
         //*/
@@ -78,7 +78,7 @@ function getRemovedRips()
   var removedSpreadsheet = SpreadsheetApp.openById(siivaInfo);
   var removedListNames = ['9/11 2016', 'GiIvaSunner non-reuploaded', 'Removed Green de la Bean rips', 'Removed Rips', 'Unlisted Rips', 'Unlisted videos'];
   var removedList = [];
-
+  
   var startRow = 60;
   var cont = true;
   
@@ -107,7 +107,7 @@ function getRemovedRips()
       {
         if (removedValues[removedRow][0] != "")
         {
-          removedList.push(formatVideoTitle(removedValues[removedRow][0]));
+          removedList.push(removedValues[removedRow][0]);
         }
         else
           cont = false;
@@ -122,12 +122,7 @@ function getRemovedRips()
     startRow = 60;
     cont = true;
   }
-  /*
-  for (d in removedList)
-  {
-    Logger.log("Formatted: " + formatVideoTitle(removedList[d]));
-  }
-  //*/
+
   return removedList;
 }
 
@@ -137,21 +132,18 @@ function getRemovedRips()
 // Reads the values from a sheet containing rips from a joke category.
 function getCategoryRips(sheetName, spreadsheetID)
 {
-  /*
-  sheetName = 'Rips featuring 7 GRAND DAD';
-  //*/
   var spreadsheet = SpreadsheetApp.openById(spreadsheetID);
   var sheet = spreadsheet.getSheetByName(sheetName);
   var data = sheet.getDataRange();
   var values = data.getValues();
-
+  
   var cellRow = 60;
   var list = [];
   var removedRips = [];
-
+  
   var startRow = 60;
   var cont = true;
-    
+  
   while (cont)
   {
     startRow++;
@@ -163,7 +155,7 @@ function getCategoryRips(sheetName, spreadsheetID)
   }
   
   cont = true;
-
+  
   while (cont)
   {
     try 
@@ -173,7 +165,7 @@ function getCategoryRips(sheetName, spreadsheetID)
         found = false;
         for (r in removedList)
         {
-          if (removedList[r].toLowerCase().equals(formatVideoTitle(values[cellRow][0]).toLowerCase()))
+          if (formatVideoTitle(removedList[r]).toLowerCase().equals(formatVideoTitle(values[cellRow][0]).toLowerCase()))
           {
             if (!found)
               removedRips.push(removedList[r]);
@@ -181,7 +173,7 @@ function getCategoryRips(sheetName, spreadsheetID)
           }
         }
         if (!found && formatVideoTitle(values[cellRow][0]).toLowerCase().indexOf('category') === -1)
-          list.push(formatVideoTitle(values[cellRow][0]));
+        list.push(values[cellRow][0]);
       }
       else
       {
@@ -201,7 +193,7 @@ function getCategoryRips(sheetName, spreadsheetID)
     console.log("Removed rips: " + removedRips.length);
     console.log("Removed rips: " + removedRips);
   }
-
+  
   return list;
 }
 
@@ -211,12 +203,6 @@ function getCategoryRips(sheetName, spreadsheetID)
 // Determines what rips are missing from the playlist.
 function getMissingRips(sheetName, playlistID, spreadsheetID) 
 {
-  /*
-  sheetName = 'Rips with Sentence Mixing';
-  playlistID = 'PLn8P5M1uNQk7Uj5GmdBcuxOAzxfWUac-Z';
-  spreadsheetID = '';
-  //*/
-  
   var list = getCategoryRips(sheetName, spreadsheetID);
   var inPlaylist = [];
   var pageToken;
@@ -225,14 +211,14 @@ function getMissingRips(sheetName, playlistID, spreadsheetID)
   {
     var query = YouTube.PlaylistItems.list('snippet', {maxResults: 50, playlistId: playlistID, pageToken: pageToken});
     
-    query.items.forEach(function(item) {inPlaylist.push(formatVideoTitle(item.snippet.title))});
+    query.items.forEach(function(item) {inPlaylist.push(item.snippet.title)});
     
     pageToken = query.nextPageToken;
   } while (pageToken)
     
   Logger.log("Total videos: " + list.length);
   console.log("Total videos: " + list.length);
-
+  
   var notInPlaylist = list;
   for (x in inPlaylist)
   {
@@ -245,7 +231,7 @@ function getMissingRips(sheetName, playlistID, spreadsheetID)
   
   Logger.log("Videos in playlist: " + inPlaylist.length);
   console.log("Videos in playlist: " + inPlaylist.length);
-
+  
   Logger.log("Videos missing from playlist: " + notInPlaylist.length);
   console.log("Videos missing from playlist: " + notInPlaylist.length);
   return notInPlaylist;
@@ -262,9 +248,6 @@ function searchForVideo(sheetTitle)
   var channelID = 'UC9ecwl3FTG66jIKA9JRDtmg'; //SiIvaGunner
   var count = 0;
   
-  Logger.log("[" + channelID + "] " + sheetTitle);
-  console.log("[" + channelID + "] " + sheetTitle);
-  
   var results = YouTube.Search.list('id,snippet', 
                                     {
                                       q: sheetTitle,//missingVideos[i],
@@ -275,18 +258,17 @@ function searchForVideo(sheetTitle)
   
   results.items.forEach(function(item)
                         {
-                          videoTitle = formatVideoTitle(item.snippet.title);
-                          Logger.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "\nSheet: " + sheetTitle.toLowerCase());
-                          console.log("Compare:\nVideo: " + videoTitle.toLowerCase() + "    \nSheet: " + sheetTitle.toLowerCase());
+                          videoTitle = item.snippet.title;
+                          Logger.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "\nSheet: " + formatVideoTitle(sheetTitle).toLowerCase());
+                          console.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "    \nSheet: " + formatVideoTitle(sheetTitle).toLowerCase());
                           
-                          if (videoTitle.toLowerCase().equals(sheetTitle.toLowerCase()))//missingVideos[i])
+                          if (formatVideoTitle(videoTitle).toLowerCase().equals(formatVideoTitle(sheetTitle).toLowerCase()))//missingVideos[i])
                           {
                             videoID = item.id.videoId;
                             count++;
                           }
                         });
   
-  //Logger.log(count + " out of " + missingVideos.length + " matches found.");
   return [videoID, videoTitle];
 }
 

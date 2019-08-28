@@ -14,7 +14,7 @@ function createPlaylist()
   for (i = 1; i < playlists.length && i < 11; i++) 
   {
     Logger.log(i);
-    /*
+    /* // Don't run! Fix how it adds the playlist info to sheets!
     var newPlaylist = YouTube.Playlists.insert(
       {
         snippet: {
