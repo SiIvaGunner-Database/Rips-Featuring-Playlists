@@ -74,7 +74,7 @@ function getMissingPlaylists()
   var existingPlaylists = getSheetInfo('sheetNames');
   Logger.log("Existing playlists: " + existingPlaylists.length);
   
-  while (cont == true)
+  while (cont)
   {
     try 
     {

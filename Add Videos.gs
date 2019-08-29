@@ -224,7 +224,7 @@ function getMissingRips(sheetName, playlistID, spreadsheetID)
   {
     for (y in notInPlaylist)
     {
-      if (notInPlaylist[y].toLowerCase().equals(inPlaylist[x].toLowerCase()))
+      if (formatVideoTitle(notInPlaylist[y]).toLowerCase().equals(formatVideoTitle(inPlaylist[x]).toLowerCase()))
         notInPlaylist.splice(y,1);
     }
   }
