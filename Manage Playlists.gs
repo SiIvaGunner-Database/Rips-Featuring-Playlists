@@ -2,7 +2,7 @@ siivaInfo = "1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk";
 var glNum;
 
 // Creates news playlists as the associated wiki is updated.
-function createPlaylist() 
+function createPlaylists() 
 {
   var vidID = '';
   var playlists = getMissingPlaylists();

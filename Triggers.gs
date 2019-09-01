@@ -1,25 +1,28 @@
 // Functions for creating triggers to run the script automatically.
 
+function recreateTriggers()
+{
+  var allTriggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < allTriggers.length; i++)
+    ScriptApp.deleteTrigger(allTriggers[i]);
+  
+  //createPlaylistsTrigger(); Don't use
+  //updateAllSheetsTrigger();
+  addVideosToPlaylistsTrigger();
+  //recreateTriggers();
+}
+
 function scheduleTrigger()
 {
   ScriptApp.newTrigger('addVideosToPlaylists')
   .timeBased()
-  .after(10 * 60 * 1000)
+  .after(10 * 60 * 1000) // 10 minutes
   .create();
 }
 
-function createPlaylistTrigger()
+function createPlaylistsTrigger()
 {
-  ScriptApp.newTrigger('createPlaylist')
-  .timeBased()
-  .onWeekDay(ScriptApp.WeekDay.SUNDAY)
-  .atHour(0)
-  .create();
-}
-
-function createPlaylistDailyTrigger()
-{
-  ScriptApp.newTrigger('createPlaylist')
+  ScriptApp.newTrigger('createPlaylists')
   .timeBased()
   .everyDays(1)
   .atHour(0)
@@ -27,15 +30,6 @@ function createPlaylistDailyTrigger()
 }
 
 function updateAllSheetsTrigger()
-{
-  ScriptApp.newTrigger('updateAllSheets')
-  .timeBased()
-  .onWeekDay(ScriptApp.WeekDay.SUNDAY)
-  .atHour(1)
-  .create();
-}
-
-function updateAllSheetsDailyTrigger()
 {
   ScriptApp.newTrigger('updateAllSheets')
   .timeBased()
@@ -48,16 +42,16 @@ function addVideosToPlaylistsTrigger()
 {
   ScriptApp.newTrigger('addVideosToPlaylists')
   .timeBased()
-  .onWeekDay(ScriptApp.WeekDay.SUNDAY)
+  .everyDays(1)
   .atHour(2)
   .create();
 }
 
-function addVideosToPlaylistsDailyTrigger()
+function recreateTriggers()
 {
   ScriptApp.newTrigger('addVideosToPlaylists')
   .timeBased()
   .everyDays(1)
-  .atHour(2)
+  .atHour(23)
   .create();
 }
