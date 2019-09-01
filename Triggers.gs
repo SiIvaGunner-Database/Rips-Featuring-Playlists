@@ -2,7 +2,7 @@
 
 function scheduleTrigger()
 {
-  ScriptApp.newTrigger('updateAllSheets')
+  ScriptApp.newTrigger('addVideosToPlaylists')
   .timeBased()
   .after(10 * 60 * 1000)
   .create();
