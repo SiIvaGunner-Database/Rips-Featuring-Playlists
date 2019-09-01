@@ -7,6 +7,7 @@ function getSheetInfo(type)
   var myPlaylistsValues = myPlaylistsRange.getValues();
   var myPlaylists = [];
   
+  var temporaryArray = [];
   var lastUpdatedPlaylist = myPlaylistsValues[0][3];
   
   var info = [];
@@ -18,6 +19,19 @@ function getSheetInfo(type)
   {
     if (myPlaylistsValues[row][0].equals(lastUpdatedPlaylist))
       cont = false;
+    else
+      switch(type)
+      {
+        case 'sheetNames':
+          temporaryArray.push(myPlaylistsValues[row][0]);
+          break;
+        case 'playlistIDs':
+          temporaryArray.push(myPlaylistsValues[row][3]);
+          break;
+        case 'spreadsheetIDs':
+          temporaryArray.push(myPlaylistsValues[row][6]);
+          break;
+      }
     row++;
   }
   
@@ -33,16 +47,13 @@ function getSheetInfo(type)
       switch(type)
       {
         case 'sheetNames':
-          var title = myPlaylistsValues[row][0];
-          info.push(title);
+          info.push(myPlaylistsValues[row][0]);
           break;
         case 'playlistIDs':
-          var playlistID = myPlaylistsValues[row][3];
-          info.push(playlistID);
+          info.push(myPlaylistsValues[row][3]);
           break;
         case 'spreadsheetIDs':
-          var spreadsheetID = myPlaylistsValues[row][6];
-          info.push(spreadsheetID);
+          info.push(myPlaylistsValues[row][6]);
           break;
       }
       //updateSheet(id, title, siivaJokes);
@@ -54,6 +65,11 @@ function getSheetInfo(type)
     }
   }
   //*/
+  
+  for (t in temporaryArray)
+  {
+    info.push(temporaryArray[t])
+  }
   
   return info;
 }

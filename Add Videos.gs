@@ -240,7 +240,7 @@ function getMissingRips(sheetName, playlistID, spreadsheetID)
   {
     for (y in notInPlaylist)
     {
-      if (formatVideoTitle(notInPlaylist[y]).toLowerCase().equals(formatVideoTitle(inPlaylist[x]).toLowerCase()))
+      if (formatVideoTitle(formatForVideosInPlaylist(notInPlaylist[y])).toLowerCase().equals(formatVideoTitle(inPlaylist[x]).toLowerCase()))
         notInPlaylist.splice(y,1);
     }
   }
@@ -318,6 +318,17 @@ function formatVideoTitle(str)
   str = str.replace(/\/Steve Harvey/g, '');
   //*/
   str = str.replace(/[^\w\s]/gi, '');
+  
+  return str;
+}
+
+function formatForVideosInPlaylist(str)
+{
+  str = str.replace(/\/Bean/g, '');
+  str = str.replace(/\/Grand Dad/g, '');
+  str = str.replace(/\/Nozomi/g, '');
+  str = str.replace(/\/Original/g, '');
+  str = str.replace(/\/Steve Harvey/g, '');
   
   return str;
 }

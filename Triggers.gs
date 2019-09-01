@@ -7,9 +7,9 @@ function recreateTriggers()
     ScriptApp.deleteTrigger(allTriggers[i]);
   
   //createPlaylistsTrigger(); Don't use
-  //updateAllSheetsTrigger();
+  updateAllSheetsTrigger();
   addVideosToPlaylistsTrigger();
-  //recreateTriggers();
+  recreateTriggersTrigger();
 }
 
 function scheduleTrigger()
@@ -47,9 +47,10 @@ function addVideosToPlaylistsTrigger()
   .create();
 }
 
-function recreateTriggers()
+// Triggerception
+function recreateTriggersTrigger()
 {
-  ScriptApp.newTrigger('addVideosToPlaylists')
+  ScriptApp.newTrigger('recreateTriggers')
   .timeBased()
   .everyDays(1)
   .atHour(23)
