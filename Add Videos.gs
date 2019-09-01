@@ -4,69 +4,85 @@ var removedList = getRemovedRips();
 // Adds new videos to playlists as their associated joke category spreadsheets are updated.
 function addVideosToPlaylists()
 {
+  startTime = new Date();
+  Logger.log("Start!");
+  console.log("Start!");
+  
   var sheetNames = getSheetInfo('sheetNames');
   var playlistIDs = getSheetInfo('playlistIDs');
   var spreadsheetIDs = getSheetInfo('spreadsheetIDs');
   
+  var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
+  var myPlaylistsSheet = myPlaylistsSpreadsheet.getSheetByName('My Playlists');
+    
   var successCount = 0;
   var failCount = 0;
   
   for (i in sheetNames)
   {
-    if (sheetNames[i] != 'Rips featuring kazoo')
+    Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
+    console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
+
+    var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i], spreadsheetIDs[i])
+    
+    for (video in missingVideos)
     {
-      Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
-      console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
-      var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i], spreadsheetIDs[i])
+      var vidNum = parseInt(video) + 1;
+      Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
+      console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
+      //*
+      var searchResult = searchForVideo(missingVideos[video]);
       
-      for (video in missingVideos)
+      if (searchResult[1] != null)
       {
-        var vidNum = parseInt(video) + 1;
-        Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-        console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-        //*
-        var searchResult = searchForVideo(missingVideos[video]);
-        
-        if (searchResult[1] != null)
+        try
         {
-          try
-          {
-            YouTube.PlaylistItems.insert
-            ({
-              snippet: 
+          YouTube.PlaylistItems.insert
+          ({
+            snippet: 
+            {
+              playlistId: playlistIDs[i], 
+              resourceId: 
               {
-                playlistId: playlistIDs[i], 
-                resourceId: 
-                {
-                  kind: "youtube#video",
-                  videoId: searchResult[0]
-                }
+                kind: "youtube#video",
+                videoId: searchResult[0]
               }
-            }, "snippet");
-            
-            Logger.log("Video added to " + sheetNames[i])
-            console.log("Video added to " + sheetNames[i])
-            successCount++;
-          } catch (e)
-          {
-            Logger.log("Video failed to insert.");
-            console.log("Video failed to insert.");
-            failCount++;
-          }
-        } else
+            }
+          }, "snippet");
+          
+          Logger.log("Video added to " + sheetNames[i])
+          console.log("Video added to " + sheetNames[i])
+          successCount++;
+        } catch (e)
         {
-          Logger.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
-          console.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
+          Logger.log("Video failed to insert.");
+          console.log("Video failed to insert.");
           failCount++;
         }
-        //*/
+      } else
+      {
+        Logger.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
+        console.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
+        failCount++;
       }
+      //*/
     }
+    // Update the value for lastUpdatedPlaylist
+    myPlaylistsSheet.getRange('D1').setValue(sheetNames[i]);
+
+    // Check if the script timer has passed 5 minutes
+    var currentTime = new Date();
+    if (currentTime.getTime() - startTime.getTime() > 300000)
+      break;
   }
   Logger.log("Videos added to playlists: " + successCount);
   Logger.log("Videos causing errors: " + failCount);
   console.log("Videos added: " + successCount);
   console.log("Videos failed: " + failCount);
+
+  scheduleTrigger();
+  Logger.log("The script will resume in ten minutes.");
+  console.log("The script will resume in ten minutes.");
 }
 
 
@@ -290,6 +306,7 @@ function formatVideoTitle(str)
   str = str.replace(/ /g, '');
   str = str.replace(/#/g, '');
   str = str.replace(/−/g, '-');
+  str = str.replace(/_/g, '');
   str = str.replace(/ʖ/g, '');
   str = str.replace(/Ultimate/g, 'UItimate');
   str = str.replace(/N----/g, 'Nigga');

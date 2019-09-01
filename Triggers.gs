@@ -1,5 +1,13 @@
 // Functions for creating triggers to run the script automatically.
 
+function scheduleTrigger()
+{
+  ScriptApp.newTrigger('updateAllSheets')
+  .timeBased()
+  .after(10 * 60 * 1000)
+  .create();
+}
+
 function createPlaylistTrigger()
 {
   ScriptApp.newTrigger('createPlaylist')

@@ -7,11 +7,25 @@ function getSheetInfo(type)
   var myPlaylistsValues = myPlaylistsRange.getValues();
   var myPlaylists = [];
   
+  var lastUpdatedPlaylist = myPlaylistsValues[0][3];
+  
   var info = [];
   var row = 1;
   var cont = true;
   
   //*  
+  while (cont)
+  {
+    if (myPlaylistsValues[row][0].equals(lastUpdatedPlaylist))
+      cont = false;
+    row++;
+  }
+  
+  if (myPlaylistsValues[row][0] == "Stop")
+    row = 1;
+  
+  cont = true;
+  
   while (cont)
   {
     if (myPlaylistsValues[row][0] != "Stop")
