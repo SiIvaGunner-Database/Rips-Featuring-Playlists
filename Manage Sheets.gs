@@ -56,9 +56,9 @@ function getSheetInfo(type)
           info.push(myPlaylistsValues[row][6]);
           break;
       }
-      //updateSheet(id, title, siivaJokes);
       row++;
-    } else
+    } 
+    else
     {
       glNum = row;
       cont = false
@@ -80,9 +80,6 @@ function getSheetInfo(type)
 // Adds ImportXML and playlist ID to a new sheet or updates ImportXML on an old sheet.
 function updateSheet(playlistID, sheetName, sheetID)
 {
-  //playlistID = 'PLn8P5M1uNQk4e8Y-LVtnoZ4rjsHOF3gMj';
-  //sheetName = 'Rips featuring Bad Apple!!';
-  //Logger.log(sheetName);
   var formattedName = sheetName.replace(/ /g, '_');
   var spreadsheet = SpreadsheetApp.openById(sheetID);
   var sheet = spreadsheet.getSheetByName(sheetName);
@@ -92,10 +89,11 @@ function updateSheet(playlistID, sheetName, sheetID)
     sheet = spreadsheet.insertSheet();
     sheet.setName(sheetName);
     sheet.getRange('A1').setValue('=importxml("https://siivagunner.fandom.com/wiki/Category:' + formattedName + '", "//ul/li/a")');
-    sheet.getRange('D1').setValue(playlistID);
+    sheet.getRange('D1').setValue(playlistID); // Currently not in use. Delete?
     Logger.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
     console.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
-  } else // Update the sheet's importxml function
+  } 
+  else // Update the sheet's importxml function
   {
     try {
       // Credit to Mogsdad and Gerbus: https://stackoverflow.com/questions/33872967/periodically-refresh-importxml-spreadsheet-function/33875957
@@ -132,7 +130,7 @@ function updateSheet(playlistID, sheetName, sheetID)
 
 
 
-//
+// Updates every sheet's importXML() function
 function updateAllSheets()
 {
   var playlistIDs = getSheetInfo('playlistIDs');
@@ -146,6 +144,7 @@ function updateAllSheets()
 
 
 
+// Currently not in use
 // Spreadsheet sorting function credit to Amit Agarwal.
 // https://ctrlq.org/code/20033-reorder-google-spreadsheet
 function sortGoogleSheets() 

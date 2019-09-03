@@ -59,7 +59,8 @@ function addVideosToPlaylists()
           console.log("Video failed to insert.");
           failCount++;
         }
-      } else
+      } 
+      else
       {
         Logger.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
         console.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
@@ -326,24 +327,33 @@ function formatForVideosInPlaylist(str)
   str = str.replace(/\/Original/g, '');
   str = str.replace(/\/Rap do Ovo/g, '');
   str = str.replace(/\/Steve Harvey/g, '');
+  str = str.replace(/\/Bean/g, '');
+  str = str.replace(/\/Grand Dad/g, '');
+  str = str.replace(/\/Kasino/g, '');
+  str = str.replace(/\/Kirby Planet Robobot/g, '');
+  str = str.replace(/\/Kirby Super Star Ultra/g, '');
+  str = str.replace(/\/Nozomi/g, '');
+  str = str.replace(/\/Original/g, '');
+  str = str.replace(/\/Rap do Ovo/g, '');
+  str = str.replace(/\/Steve Harvey/g, '');
 
   str = str.replace(/\/1/g, '');
   str = str.replace(/\/2/g, '');
   str = str.replace(/\/3/g, '');
 
-  str = str.replace(/\/February 2/, '');
-  str = str.replace(/\/February 3/, '');
+  str = str.replace(/\/February 2/g, '');
+  str = str.replace(/\/February 3/g, '');
 
-  str = str.replace(/ \/(April 16, 2016\)\/1/g, '');
-  str = str.replace(/ \/(April 16, 2016\)\/2/g, '');
-  str = str.replace(/ \/(April 16, 2016\)\/3/g, '');
-  str = str.replace(/ \/(April 16, 2016\)\/4/g, '');
-  str = str.replace(/ \/(April 16, 2016\)\/5/g, '');
+  str = str.replace(/ \(April 16, 2016\)\/1/g, '');
+  str = str.replace(/ \(April 16, 2016\)\/2/g, '');
+  str = str.replace(/ \(April 16, 2016\)\/3/g, '');
+  str = str.replace(/ \(April 16, 2016\)\/4/g, '');
+  str = str.replace(/ \(April 16, 2016\)\/5/g, '');
   
-  str = str.replace(/ \(May 30, 2016\)/, '');
-  str = str.replace(/ \(July 4, 2016\)/, '');
-  str = str.replace(/ \(February 2, 2017\)/, '');
-  str = str.replace(/ \(February 3, 2017\)/, '');
+  str = str.replace(/ \(May 30, 2016\)/g, '');
+  str = str.replace(/ \(July 4, 2016\)/g, '');
+  str = str.replace(/ \(February 2, 2017\)/g, '');
+  str = str.replace(/ \(February 3, 2017\)/g, '');
   
   return str;
 }
