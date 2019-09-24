@@ -6,10 +6,13 @@ function recreateTriggers()
   for (var i = 0; i < allTriggers.length; i++)
     ScriptApp.deleteTrigger(allTriggers[i]);
   
-  //createPlaylistsTrigger(); Don't use
+  //createPlaylistsTrigger(); Don't use yet
   updateAllSheetsTrigger();
   addVideosToPlaylistsTrigger();
   recreateTriggersTrigger();
+
+  Logger.log("All triggers have been successfully deleted and recreated.");
+  console.log("All triggers have been successfully deleted and recreated.");
 }
 
 function scheduleTrigger()

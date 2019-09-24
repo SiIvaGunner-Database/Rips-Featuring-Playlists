@@ -84,6 +84,9 @@ function addVideosToPlaylists()
   scheduleTrigger();
   Logger.log("The script will resume in ten minutes.");
   console.log("The script will resume in ten minutes.");
+
+  Logger.log("Finished!");
+  console.log("Finished!");
 }
 
 
@@ -265,7 +268,7 @@ function searchForVideo(sheetTitle)
   var channelID = 'UC9ecwl3FTG66jIKA9JRDtmg'; //SiIvaGunner
   var count = 0;
   
-  var results = YouTube.Search.list('id,snippet', 
+  var results = YouTube.Search.list('id,snippet',
                                     {
                                       q: sheetTitle,//missingVideos[i],
                                       maxResults: 5,
@@ -296,6 +299,7 @@ function searchForVideo(sheetTitle)
 // Replaces special characters and censored words.
 function formatVideoTitle(str)
 {
+  str = str.replace(/é/g, 'e');
   str = str.replace(/&amp;/g, '&');
   str = str.replace(/&#39;/g, '\'');
   str = str.replace(/&quot;/g, '\"');
@@ -354,6 +358,7 @@ function formatForVideosInPlaylist(str)
   str = str.replace(/ \(July 4, 2016\)/g, '');
   str = str.replace(/ \(February 2, 2017\)/g, '');
   str = str.replace(/ \(February 3, 2017\)/g, '');
-  
+  str = str.replace(/ \(April 11th, 2018\)/g, '');
+
   return str;
 }

@@ -133,12 +133,18 @@ function updateSheet(playlistID, sheetName, sheetID)
 // Updates every sheet's importXML() function
 function updateAllSheets()
 {
+  Logger.log("Start!");
+  console.log("Start!");
+
   var playlistIDs = getSheetInfo('playlistIDs');
   var sheetNames = getSheetInfo('sheetNames');
   var spreadsheetIDs = getSheetInfo('spreadsheetIDs');
   
   for (var i in playlistIDs)
-      updateSheet(playlistIDs[i], sheetNames[i], spreadsheetIDs[i]);
+    updateSheet(playlistIDs[i], sheetNames[i], spreadsheetIDs[i]);
+
+  Logger.log("Finished!");
+  console.log("Finished!");
 }
 
 

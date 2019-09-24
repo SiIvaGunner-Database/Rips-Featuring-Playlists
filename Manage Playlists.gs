@@ -4,6 +4,9 @@ var glNum; // Make this work!
 // Creates news playlists as the associated wiki is updated.
 function createPlaylists() 
 {
+  Logger.log("Start!");
+  console.log("Start!");
+
   var vidID = '';
   var sheetID = '';
   var playlists = getMissingPlaylists();
@@ -17,7 +20,7 @@ function createPlaylists()
   {
     if (i != 0 && i < 11)
     {
-      //*
+      /*
       var newPlaylist = YouTube.Playlists.insert(
         {
           snippet: {
@@ -59,6 +62,9 @@ function createPlaylists()
     }
   }
   myPlaylistsSheet.getRange(glNum + i, 1).setValue("Stop");
+
+  Logger.log("Finished!");
+  console.log("Finished!");
 }
 
 
