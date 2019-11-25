@@ -1,19 +1,14 @@
-var siivaInfo = '1pWzlHW2A7tgSbAsbfWgvjgAt3D_Gzr8I_nv7WxgJcuk';
-var removedList = getRemovedRips();
+var ripsFeaturing = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+var removedRips = getRemovedRips();
 
 // Adds new videos to playlists as their associated joke category spreadsheets are updated.
 function addVideosToPlaylists()
 {
   startTime = new Date();
-  Logger.log("Start!");
-  console.log("Start!");
-  
+
   var sheetNames = getSheetInfo('sheetNames');
   var playlistIDs = getSheetInfo('playlistIDs');
   var spreadsheetIDs = getSheetInfo('spreadsheetIDs');
-  
-  var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
-  var myPlaylistsSheet = myPlaylistsSpreadsheet.getSheetByName('My Playlists');
     
   var successCount = 0;
   var failCount = 0;
@@ -30,7 +25,7 @@ function addVideosToPlaylists()
       var vidNum = parseInt(video) + 1;
       Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
       console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      //*
+      /*
       var searchResult = searchForVideo(missingVideos[video]);
       
       if (searchResult[1] != null)
@@ -69,24 +64,23 @@ function addVideosToPlaylists()
       //*/
     }
     // Update the value for lastUpdatedPlaylist
-    myPlaylistsSheet.getRange('D1').setValue(sheetNames[i]);
+    ripsFeaturing.getRange('I1').setValue(sheetNames[i]);
 
     // Check if the script timer has passed 5 minutes
     var currentTime = new Date();
     if (currentTime.getTime() - startTime.getTime() > 300000)
       break;
   }
+  
   Logger.log("Videos added to playlists: " + successCount);
   Logger.log("Videos causing errors: " + failCount);
   console.log("Videos added: " + successCount);
   console.log("Videos failed: " + failCount);
 
-  scheduleTrigger();
+  //scheduleTrigger();
+  
   Logger.log("The script will resume in ten minutes.");
   console.log("The script will resume in ten minutes.");
-
-  Logger.log("Finished!");
-  console.log("Finished!");
 }
 
 
@@ -95,54 +89,46 @@ function addVideosToPlaylists()
 // Reads the values of all rips that are in any removed categories on the wiki.
 function getRemovedRips()
 {
-  var removedSpreadsheet = SpreadsheetApp.openById(siivaInfo);
-  var removedListNames = ['9/11 2016', 'GiIvaSunner non-reuploaded', 'Removed Green de la Bean rips', 'Removed Rips', 'Unlisted Rips', 'Unlisted videos'];
+  //*
+  var removedListNames = ['9/11_2016', 'GiIvaSunner_non-reuploaded', 'Removed_Green_de_la_Bean_rips', 'Removed_rips', 'Unlisted_rips', 'Unlisted_videos'];
   var removedList = [];
   
-  var startRow = 60;
-  var cont = true;
-  
-  for (name in removedListNames)
+  for (var i in removedListNames)
   {
-    var removedSheet = removedSpreadsheet.getSheetByName(removedListNames[name]);
-    var removedData = removedSheet.getDataRange();
-    var removedValues = removedData.getValues();
-    var removedRow = 60;
-    var countVals = 0;
-    while (cont)
-    {
-      startRow++;
-      if (removedValues[startRow][0] == "Other")
-      {
-        removedRow = startRow+1;
-        cont = false;
-      }
-    }
+    var url = "https://siivagunner.fandom.com/api.php?"; 
     
-    cont = true;
+    var params = {
+      action: "query",
+      list: "categorymembers",
+      cmtitle: "Category:" + removedListNames[i],
+      cmtpye: "title",
+      cmlimit: "5000",
+      format: "json"
+    };
     
-    while (cont)
-    {
-      try 
-      {
-        if (removedValues[removedRow][0] != "")
-        {
-          removedList.push(removedValues[removedRow][0]);
-        }
-        else
-          cont = false;
-      } catch (e) 
-      {
-        cont = false;
-        console.log(e);
-      }
-      removedRow++;
-    }
+    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
     
-    startRow = 60;
-    cont = true;
-  }
+    var response = UrlFetchApp.fetch(url);
+    
+    var str = response.toString();
+    var shift = false;
 
+    //Logger.log(removedListNames[i] + "\n\n" + str);
+    arr = str.split("\"},{\"");
+    arr[arr.length - 1] = arr[arr.length - 1].replace("\"}]}}", "");
+    
+    for (j in arr)
+    {
+      arr[j] = arr[j].replace(/.*title\":\"/, "");
+      if (arr[j].indexOf("Category:") == -1)
+        removedList.push(arr[j]);
+    }
+    
+    //Logger.log("ARRAY: \n" + arr.toString().replace(/,/g, "\n"));
+    //Logger.log(removedListNames[i] + " LENGTH: " + arr.length);
+  }
+  //*/
+  //Logger.log(removedList.length);
   return removedList;
 }
 
@@ -152,69 +138,71 @@ function getRemovedRips()
 // Reads the values from a sheet containing rips from a joke category.
 function getCategoryRips(sheetName, spreadsheetID)
 {
-  var spreadsheet = SpreadsheetApp.openById(spreadsheetID);
-  var sheet = spreadsheet.getSheetByName(sheetName);
-  var data = sheet.getDataRange();
-  var values = data.getValues();
+  //*
+  //sheetName = "Rips featuring GO MY WAY!!";
+  var url = "https://siivagunner.fandom.com/api.php?"; 
   
-  var cellRow = 60;
-  var list = [];
-  var removedRips = [];
+  var removedCategoryRips = [];
+  var categoryRips = [];
+
+  var removed = false;
+  var shift = false;
   
-  var startRow = 60;
-  var cont = true;
+  var params = {
+    action: "query",
+    list: "categorymembers",
+    cmtitle: "Category:" + formatLink(sheetName),
+    cmtpye: "title",
+    cmlimit: "5000",
+    format: "json"
+  };
   
-  while (cont)
+  Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+  
+  var response = UrlFetchApp.fetch(url);
+  var str = response.toString();
+  var arr = str.split("\"},{\"");
+  
+  arr[arr.length - 1] = arr[arr.length - 1].replace("\"}]}}", "");
+  
+  console.log("Response length: " + arr.length);
+
+  for (i in arr)
   {
-    startRow++;
-    if (values[startRow][0] == "Other")
+    arr[i] = arr[i].replace(/.*title\":\"/, "");
+    
+    if (arr[i].indexOf("Category:") == -1)
     {
-      cellRow = startRow+1;
-      cont = false;
-    }
-  }
-  
-  cont = true;
-  
-  while (cont)
-  {
-    try 
-    {
-      if (values[cellRow][0] != "")
+      // Confirm that the rip is on YouTube.
+      for (j in removedRips)
       {
-        found = false;
-        for (r in removedList)
+        if (removedRips[j] == arr[i])
         {
-          if (formatVideoTitle(removedList[r]).toLowerCase().equals(formatVideoTitle(values[cellRow][0]).toLowerCase()))
-          {
-            if (!found)
-              removedRips.push(removedList[r]);
-            found = true;
-          }
+          removedCategoryRips.push(arr[i]);
+          removed = true;
+          break;
         }
-        if (!found && formatVideoTitle(values[cellRow][0]).toLowerCase().indexOf('category') === -1)
-        list.push(values[cellRow][0]);
       }
-      else
-      {
-        cont = false;
-      }
-    } catch (e) {
-      cont = false;
-      console.log(e);
+
+      if (!removed)
+        categoryRips.push(arr[i]);
+
+      removed = false;
     }
-    cellRow++;
   }
   
-  if (removedRips != "")
-  {
-    Logger.log("Removed rips: " + removedRips.length);
-    Logger.log("Removed rips: " + removedRips);
-    console.log("Removed rips: " + removedRips.length);
-    console.log("Removed rips: " + removedRips);
-  }
-  
-  return list;
+  //Logger.log("ARRAY: \n" + arr.toString().replace(/,/g, "\n"));
+  //*/
+  //if (removedCategoryRips != "")
+  //{
+    Logger.log("Removed rips: " + removedCategoryRips.length);
+    Logger.log("Removed rips: " + removedCategoryRips);
+    Logger.log("Category rips: " + categoryRips.length);
+    Logger.log("Category rips: " + categoryRips);
+    console.log("Removed rips: " + removedCategoryRips.length);
+    console.log("Removed rips: " + removedCategoryRips);
+  //}
+  return categoryRips;
 }
 
 
@@ -290,75 +278,4 @@ function searchForVideo(sheetTitle)
                         });
   
   return [videoID, videoTitle];
-}
-
-
-
-
-
-// Replaces special characters and censored words.
-function formatVideoTitle(str)
-{
-  str = str.replace(/é/g, 'e');
-  str = str.replace(/&amp;/g, '&');
-  str = str.replace(/&#39;/g, '\'');
-  str = str.replace(/&quot;/g, '\"');
-  str = str.replace(/\[/g, '(');
-  str = str.replace(/\]/g, ')');
-  str = str.replace(/\~/g, '-');
-  str = str.replace(/(?:\r\n|\r|\n)/g, '');//Replaces line breaks
-  str = str.replace(/☆/g, '');
-  str = str.replace(/ /g, '');
-  str = str.replace(/#/g, '');
-  str = str.replace(/−/g, '-');
-  str = str.replace(/_/g, '');
-  str = str.replace(/ʖ/g, '');
-  str = str.replace(/Ultimate/g, 'UItimate');
-  str = str.replace(/N----/g, 'Nigga');
-  str = str.replace(/[^\w\s]/gi, '');
-  
-  return str;
-}
-
-function formatForVideosInPlaylist(str)
-{
-  str = str.replace(/\/Bean/g, '');
-  str = str.replace(/\/Grand Dad/g, '');
-  str = str.replace(/\/Kasino/g, '');
-  str = str.replace(/\/Kirby Planet Robobot/g, '');
-  str = str.replace(/\/Kirby Super Star Ultra/g, '');
-  str = str.replace(/\/Nozomi/g, '');
-  str = str.replace(/\/Original/g, '');
-  str = str.replace(/\/Rap do Ovo/g, '');
-  str = str.replace(/\/Steve Harvey/g, '');
-  str = str.replace(/\/Bean/g, '');
-  str = str.replace(/\/Grand Dad/g, '');
-  str = str.replace(/\/Kasino/g, '');
-  str = str.replace(/\/Kirby Planet Robobot/g, '');
-  str = str.replace(/\/Kirby Super Star Ultra/g, '');
-  str = str.replace(/\/Nozomi/g, '');
-  str = str.replace(/\/Original/g, '');
-  str = str.replace(/\/Rap do Ovo/g, '');
-  str = str.replace(/\/Steve Harvey/g, '');
-
-  str = str.replace(/\/1/g, '');
-  str = str.replace(/\/2/g, '');
-  str = str.replace(/\/3/g, '');
-
-  str = str.replace(/\/February 2/g, '');
-  str = str.replace(/\/February 3/g, '');
-
-  str = str.replace(/ \(April 16, 2016\)\/1/g, '');
-  str = str.replace(/ \(April 16, 2016\)\/2/g, '');
-  str = str.replace(/ \(April 16, 2016\)\/3/g, '');
-  str = str.replace(/ \(April 16, 2016\)\/4/g, '');
-  str = str.replace(/ \(April 16, 2016\)\/5/g, '');
-  
-  str = str.replace(/ \(May 30, 2016\)/g, '');
-  str = str.replace(/ \(July 4, 2016\)/g, '');
-  str = str.replace(/ \(February 2, 2017\)/g, '');
-  str = str.replace(/ \(February 3, 2017\)/g, '');
-  str = str.replace(/ \(April 11th, 2018\)/g, '');
-
-  return str;
 }

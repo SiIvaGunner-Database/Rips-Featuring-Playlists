@@ -1,81 +1,63 @@
 // Reads the list of playlists I've created from a spreadsheet.
 function getSheetInfo(type)
 {
-  var myPlaylistsSpreadsheet = SpreadsheetApp.openById(siivaInfo);
-  var myPlaylistsSheet = myPlaylistsSpreadsheet.getSheetByName("My Playlists");
-  var myPlaylistsRange = myPlaylistsSheet.getDataRange();
-  var myPlaylistsValues = myPlaylistsRange.getValues();
+  var type = "sheetNames";
   var myPlaylists = [];
   
   var temporaryArray = [];
-  var lastUpdatedPlaylist = myPlaylistsValues[0][3];
+  var lastUpdatedPlaylist = ripsFeaturing.getRange("I1").getValue();
   
   var info = [];
   var row = 1;
-  var cont = true;
   
-  //*  
-  while (cont)
+  while (!ripsFeaturing.getRange(row, 1).getValue().equals(lastUpdatedPlaylist))
   {
-    if (myPlaylistsValues[row][0].equals(lastUpdatedPlaylist))
-      cont = false;
-    else
-      switch(type)
-      {
-        case 'sheetNames':
-          temporaryArray.push(myPlaylistsValues[row][0]);
-          break;
-        case 'playlistIDs':
-          temporaryArray.push(myPlaylistsValues[row][3]);
-          break;
-        case 'spreadsheetIDs':
-          temporaryArray.push(myPlaylistsValues[row][6]);
-          break;
-      }
+    switch (type)
+    {
+      case 'sheetNames':
+        temporaryArray.push(ripsFeaturing.getRange(row, 1).getValue());
+        break;
+      case 'playlistIDs':
+        temporaryArray.push(ripsFeaturing.getRange(row, 4).getValue());
+        break;
+    }
     row++;
   }
   
-  if (myPlaylistsValues[row][0] == "Stop")
+  temporaryArray.push(ripsFeaturing.getRange(row, 1).getValue());
+  row++;
+  
+  if (ripsFeaturing.getRange(row, 1).getValue() == "")
     row = 1;
   
   cont = true;
   
-  while (cont)
+  while (ripsFeaturing.getRange(row, 1).getValue() != "")
   {
-    if (myPlaylistsValues[row][0] != "Stop")
+    switch (type)
     {
-      switch(type)
-      {
-        case 'sheetNames':
-          info.push(myPlaylistsValues[row][0]);
-          break;
-        case 'playlistIDs':
-          info.push(myPlaylistsValues[row][3]);
-          break;
-        case 'spreadsheetIDs':
-          info.push(myPlaylistsValues[row][6]);
-          break;
-      }
-      row++;
-    } 
-    else
-    {
-      glNum = row;
-      cont = false
+      case 'sheetNames':
+        info.push(ripsFeaturing.getRange(row, 1).getValue());
+        break;
+      case 'playlistIDs':
+        info.push(ripsFeaturing.getRange(row, 4).getValue());
+        break;
     }
+    row++;
   }
-  //*/
+  glNum = row;
   
   for (t in temporaryArray)
-  {
-    info.push(temporaryArray[t])
-  }
-  
+    info.push(temporaryArray[t]);
+
+  Logger.log(info);
+  Logger.log(info.length);
+
   return info;
 }
 
 
-
+// Everything below will be deleted soon.
 
 // Adds ImportXML and playlist ID to a new sheet or updates ImportXML on an old sheet.
 function updateSheet(playlistID, sheetName, sheetID)
@@ -89,7 +71,7 @@ function updateSheet(playlistID, sheetName, sheetID)
     sheet = spreadsheet.insertSheet();
     sheet.setName(sheetName);
     sheet.getRange('A1').setValue('=importxml("https://siivagunner.fandom.com/wiki/Category:' + formattedName + '", "//ul/li/a")');
-    sheet.getRange('D1').setValue(playlistID); // Currently not in use. Delete?
+    sheet.getRange('D1').setValue(playlistID); // Currently not being used. Delete?
     Logger.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
     console.log("Created new sheet for " + sheetName + "    \n[" + playlistID + "]");
   } 
