@@ -7,7 +7,6 @@ function recreateTriggers()
     ScriptApp.deleteTrigger(allTriggers[i]);
   
   //createPlaylistsTrigger(); Don't use yet
-  updateAllSheetsTrigger();
   addVideosToPlaylistsTrigger();
   recreateTriggersTrigger();
 
@@ -28,25 +27,17 @@ function createPlaylistsTrigger()
   ScriptApp.newTrigger('createPlaylists')
   .timeBased()
   .everyDays(1)
-  .atHour(0)
+  .atHour(21)
   .create();
 }
 
-function updateAllSheetsTrigger()
-{
-  ScriptApp.newTrigger('updateAllSheets')
-  .timeBased()
-  .everyDays(1)
-  .atHour(1)
-  .create();
-}
 
 function addVideosToPlaylistsTrigger()
 {
   ScriptApp.newTrigger('addVideosToPlaylists')
   .timeBased()
   .everyDays(1)
-  .atHour(2)
+  .atHour(22)
   .create();
 }
 

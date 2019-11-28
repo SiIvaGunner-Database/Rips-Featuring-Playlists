@@ -8,17 +8,16 @@ function addVideosToPlaylists()
 
   var sheetNames = getSheetInfo('sheetNames');
   var playlistIDs = getSheetInfo('playlistIDs');
-  var spreadsheetIDs = getSheetInfo('spreadsheetIDs');
     
   var successCount = 0;
   var failCount = 0;
   
   for (i in sheetNames)
   {
-    Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
-    console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "] [" + spreadsheetIDs[i] + "]");
+    Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "]");
+    console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "]");
 
-    var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i], spreadsheetIDs[i])
+    var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i])
     
     for (video in missingVideos)
     {
@@ -64,7 +63,8 @@ function addVideosToPlaylists()
       //*/
     }
     // Update the value for lastUpdatedPlaylist
-    ripsFeaturing.getRange('I1').setValue(sheetNames[i]);
+    ripsFeaturing.getRange('I2').setValue(sheetNames[i]);
+    ripsFeaturing.getRange('I3').setValue(i + 2);
 
     // Check if the script timer has passed 5 minutes
     var currentTime = new Date();
@@ -74,10 +74,10 @@ function addVideosToPlaylists()
   
   Logger.log("Videos added to playlists: " + successCount);
   Logger.log("Videos causing errors: " + failCount);
-  console.log("Videos added: " + successCount);
-  console.log("Videos failed: " + failCount);
+  console.log("Videos added to playlists: " + successCount);
+  console.log("Videos causing errors: " + failCount);
 
-  //scheduleTrigger();
+  scheduleTrigger();
   
   Logger.log("The script will resume in ten minutes.");
   console.log("The script will resume in ten minutes.");
@@ -106,16 +106,14 @@ function getRemovedRips()
     };
     
     Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-    var response = UrlFetchApp.fetch(url);
     
+    var response = UrlFetchApp.fetch(url);
     var data = JSON.parse(response.getContentText());
     var rips = data.query.categorymembers;
+    
     for (j in rips)
       removedList.push(rips[j].title);
-    //Logger.log("ARRAY: \n" + arr.toString().replace(/,/g, "\n"));
-    //Logger.log(removedListNames[i] + " LENGTH: " + arr.length);
   }
-  //Logger.log(removedList.length);
   return removedList;
 }
 
@@ -123,7 +121,7 @@ function getRemovedRips()
 
 
 // Reads the values from a sheet containing rips from a joke category.
-function getCategoryRips(sheetName, spreadsheetID)
+function getCategoryRips(sheetName)
 {
   //sheetName = "Rips featuring GO MY WAY!!";
   var url = "https://siivagunner.fandom.com/api.php?"; 
@@ -161,21 +159,21 @@ function getCategoryRips(sheetName, spreadsheetID)
       }
     }
     
-    if (!removed)
+    if (!removed && rips[i].title.indexOf("Category:" === -1))
       categoryRips.push(rips[i].title);
     
     removed = false;
   }
 
-  //if (removedCategoryRips != "")
-  //{
+  if (removedCategoryRips != "")
+  {
     Logger.log("Removed rips: " + removedCategoryRips.length);
     Logger.log("Removed rips: " + removedCategoryRips);
     Logger.log("Category rips: " + categoryRips.length);
     Logger.log("Category rips: " + categoryRips);
     console.log("Removed rips: " + removedCategoryRips.length);
     console.log("Removed rips: " + removedCategoryRips);
-  //}
+  }
   
   return categoryRips;
 }
@@ -184,9 +182,9 @@ function getCategoryRips(sheetName, spreadsheetID)
 
 
 // Determines what rips are missing from the playlist.
-function getMissingRips(sheetName, playlistID, spreadsheetID) 
+function getMissingRips(sheetName, playlistID) 
 {
-  var list = getCategoryRips(sheetName, spreadsheetID);
+  var list = getCategoryRips(sheetName);
   var inPlaylist = [];
   var pageToken;
   
@@ -224,7 +222,7 @@ function getMissingRips(sheetName, playlistID, spreadsheetID)
 
 
 // Searches YouTube for the specified video.
-function searchForVideo(sheetTitle) 
+function searchForVideo(wikiTitle) 
 {
   var videoID;
   var videoTitle;
@@ -233,7 +231,7 @@ function searchForVideo(sheetTitle)
   
   var results = YouTube.Search.list('id,snippet',
                                     {
-                                      q: sheetTitle,//missingVideos[i],
+                                      q: wikiTitle,
                                       maxResults: 5,
                                       type: 'video',
                                       channelId: channelID
@@ -242,10 +240,10 @@ function searchForVideo(sheetTitle)
   results.items.forEach(function(item)
                         {
                           videoTitle = item.snippet.title;
-                          Logger.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "\nSheet: " + formatVideoTitle(sheetTitle).toLowerCase());
-                          console.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "    \nSheet: " + formatVideoTitle(sheetTitle).toLowerCase());
+                          Logger.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "\nWiki: " + formatVideoTitle(wikiTitle).toLowerCase());
+                          console.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "    \nWiki: " + formatVideoTitle(wikiTitle).toLowerCase());
                           
-                          if (formatVideoTitle(videoTitle).toLowerCase().equals(formatVideoTitle(sheetTitle).toLowerCase()))//missingVideos[i])
+                          if (formatVideoTitle(videoTitle).toLowerCase().equals(formatVideoTitle(wikiTitle).toLowerCase()))//missingVideos[i])
                           {
                             videoID = item.id.videoId;
                             count++;

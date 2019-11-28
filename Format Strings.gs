@@ -1,7 +1,7 @@
 
 function test()
 {
-  str = "5 Second Countdown (2/3) - Kahoot!";
+  str = "Your Best Nightmare (Beta Mix Alternative Unused OST Version) - Undertale";
   Logger.log(formatVideoTitle(formatForVideosInPlaylist(str)).toLowerCase());
   Logger.log(formatVideoTitle(str).toLowerCase());
   Logger.log(formatVideoTitle(formatForVideosInPlaylist(str)).toLowerCase().equals(formatVideoTitle(str).toLowerCase()));
@@ -11,7 +11,6 @@ function test()
 function formatLink(str)
 {
   str = str.replace(/ /g, "_");
-  str = str.replace(/"/g, "\"\"");
   str = str.replace(/#/g, "");
   str = str.replace(/&/g, "%26");
   str = str.replace(/'/g, "%27");
