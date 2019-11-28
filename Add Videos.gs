@@ -89,7 +89,6 @@ function addVideosToPlaylists()
 // Reads the values of all rips that are in any removed categories on the wiki.
 function getRemovedRips()
 {
-  //*
   var removedListNames = ['9/11_2016', 'GiIvaSunner_non-reuploaded', 'Removed_Green_de_la_Bean_rips', 'Removed_rips', 'Unlisted_rips', 'Unlisted_videos'];
   var removedList = [];
   
@@ -107,27 +106,15 @@ function getRemovedRips()
     };
     
     Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-    
     var response = UrlFetchApp.fetch(url);
     
-    var str = response.toString();
-    var shift = false;
-
-    //Logger.log(removedListNames[i] + "\n\n" + str);
-    arr = str.split("\"},{\"");
-    arr[arr.length - 1] = arr[arr.length - 1].replace("\"}]}}", "");
-    
-    for (j in arr)
-    {
-      arr[j] = arr[j].replace(/.*title\":\"/, "");
-      if (arr[j].indexOf("Category:") == -1)
-        removedList.push(arr[j]);
-    }
-    
+    var data = JSON.parse(response.getContentText());
+    var rips = data.query.categorymembers;
+    for (j in rips)
+      removedList.push(rips[j].title);
     //Logger.log("ARRAY: \n" + arr.toString().replace(/,/g, "\n"));
     //Logger.log(removedListNames[i] + " LENGTH: " + arr.length);
   }
-  //*/
   //Logger.log(removedList.length);
   return removedList;
 }
@@ -138,7 +125,6 @@ function getRemovedRips()
 // Reads the values from a sheet containing rips from a joke category.
 function getCategoryRips(sheetName, spreadsheetID)
 {
-  //*
   //sheetName = "Rips featuring GO MY WAY!!";
   var url = "https://siivagunner.fandom.com/api.php?"; 
   
@@ -160,39 +146,27 @@ function getCategoryRips(sheetName, spreadsheetID)
   Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
   
   var response = UrlFetchApp.fetch(url);
-  var str = response.toString();
-  var arr = str.split("\"},{\"");
+  var data = JSON.parse(response.getContentText());
+  var rips = data.query.categorymembers;
   
-  arr[arr.length - 1] = arr[arr.length - 1].replace("\"}]}}", "");
-  
-  console.log("Response length: " + arr.length);
-
-  for (i in arr)
+  for (i in rips)
   {
-    arr[i] = arr[i].replace(/.*title\":\"/, "");
-    
-    if (arr[i].indexOf("Category:") == -1)
+    for (j in removedRips)
     {
-      // Confirm that the rip is on YouTube.
-      for (j in removedRips)
+      if (removedRips[j] == rips[i].title)
       {
-        if (removedRips[j] == arr[i])
-        {
-          removedCategoryRips.push(arr[i]);
-          removed = true;
-          break;
-        }
+        removedCategoryRips.push(rips[i].title);
+        removed = true;
+        break;
       }
-
-      if (!removed)
-        categoryRips.push(arr[i]);
-
-      removed = false;
     }
+    
+    if (!removed)
+      categoryRips.push(rips[i].title);
+    
+    removed = false;
   }
-  
-  //Logger.log("ARRAY: \n" + arr.toString().replace(/,/g, "\n"));
-  //*/
+
   //if (removedCategoryRips != "")
   //{
     Logger.log("Removed rips: " + removedCategoryRips.length);
@@ -202,6 +176,7 @@ function getCategoryRips(sheetName, spreadsheetID)
     console.log("Removed rips: " + removedCategoryRips.length);
     console.log("Removed rips: " + removedCategoryRips);
   //}
+  
   return categoryRips;
 }
 
