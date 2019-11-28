@@ -8,4 +8,4 @@ Spreadsheet: https://docs.google.com/spreadsheets/d/1poNOCj5M31QSkdD4AMXvewuFMj-
 
 SiIvaGunner Wiki: https://siivagunner.fandom.com/wiki/SiIvaGunner_Wikia
 
-SiIvaGunner Joke Playlists: https://www.youtube.com/channel/UC6ajqR7lEYf-33Gsj4lgVOA/playlists?view=1
+Rips Featuring Playlists: https://www.youtube.com/channel/UC6ajqR7lEYf-33Gsj4lgVOA/playlists?view=1
