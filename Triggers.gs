@@ -14,14 +14,6 @@ function recreateTriggers()
   console.log("All triggers have been successfully deleted and recreated.");
 }
 
-function scheduleTrigger()
-{
-  ScriptApp.newTrigger('addVideosToPlaylists')
-  .timeBased()
-  .after(10 * 60 * 1000) // 10 minutes
-  .create();
-}
-
 function createPlaylistsTrigger()
 {
   ScriptApp.newTrigger('createPlaylists')

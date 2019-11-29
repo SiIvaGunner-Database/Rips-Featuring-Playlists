@@ -7,7 +7,7 @@ function addVideosToPlaylists()
   startTime = new Date();
 
   var sheetNames = getSheetInfo('sheetNames');
-  var playlistIDs = getSheetInfo('playlistIDs');
+  var playlistIDs = getSheetInfo('playlistIds');
     
   var successCount = 0;
   var failCount = 0;
@@ -62,9 +62,8 @@ function addVideosToPlaylists()
       }
       //*/
     }
-    // Update the value for lastUpdatedPlaylist
-    ripsFeaturing.getRange('I2').setValue(sheetNames[i]);
-    ripsFeaturing.getRange('I3').setValue(i + 2);
+    // Update the value for lastUpdatedPlaylist and lastUpdatedRow
+    updateSpreadsheet(sheetNames[i]);
 
     // Check if the script timer has passed 5 minutes
     var currentTime = new Date();
@@ -76,11 +75,6 @@ function addVideosToPlaylists()
   Logger.log("Videos causing errors: " + failCount);
   console.log("Videos added to playlists: " + successCount);
   console.log("Videos causing errors: " + failCount);
-
-  scheduleTrigger();
-  
-  Logger.log("The script will resume in ten minutes.");
-  console.log("The script will resume in ten minutes.");
 }
 
 
