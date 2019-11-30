@@ -1,4 +1,4 @@
-
+// For testing string comparisons.
 function test()
 {
   str = "Your Best Nightmare (Beta Mix Alternative Unused OST Version) - Undertale";
@@ -43,7 +43,7 @@ function formatVideoTitle(str)
   return str;
 }
 
-// Removes additions in FANDOM titles.
+// Removes added text in FANDOM titles.
 function formatForVideosInPlaylist(str)
 {
   str = str.replace(/\/Bean/g, '');

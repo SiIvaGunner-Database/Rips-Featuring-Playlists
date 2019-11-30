@@ -1,14 +1,14 @@
 // Functions for creating triggers to run the script automatically.
-
+// Deletes and recreates all triggers. For use when scheduled times are changed.
 function recreateTriggers()
 {
-  var allTriggers = ScriptApp.getProjectTriggers();
-  for (var i = 0; i < allTriggers.length; i++)
-    ScriptApp.deleteTrigger(allTriggers[i]);
+  var triggers = ScriptApp.getProjectTriggers();
   
-  //createPlaylistsTrigger(); Don't use yet
+  for (var i = 0; i < triggers.length; i++)
+    ScriptApp.deleteTrigger(triggers[i]);
+  
+  createPlaylistsTrigger();
   addVideosToPlaylistsTrigger();
-  recreateTriggersTrigger();
 
   Logger.log("All triggers have been successfully deleted and recreated.");
   console.log("All triggers have been successfully deleted and recreated.");
@@ -19,7 +19,7 @@ function createPlaylistsTrigger()
   ScriptApp.newTrigger('createPlaylists')
   .timeBased()
   .everyDays(1)
-  .atHour(21)
+  .atHour(22)
   .create();
 }
 
@@ -27,16 +27,6 @@ function createPlaylistsTrigger()
 function addVideosToPlaylistsTrigger()
 {
   ScriptApp.newTrigger('addVideosToPlaylists')
-  .timeBased()
-  .everyDays(1)
-  .atHour(22)
-  .create();
-}
-
-// Triggerception
-function recreateTriggersTrigger()
-{
-  ScriptApp.newTrigger('recreateTriggers')
   .timeBased()
   .everyDays(1)
   .atHour(23)

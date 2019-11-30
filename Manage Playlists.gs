@@ -1,4 +1,4 @@
-// Creates news playlists as the associated wiki is updated.
+// Creates news playlists when new categories have been added to the wiki.
 function createPlaylists() 
 {
   var playlists = getMissingPlaylists();
@@ -94,7 +94,7 @@ function getMissingPlaylists()
 
 
 
-// To do: add continuation and read playlist ID's from sheet.
+// To do: add continuation and read playlist IDs from sheet.
 // Updates all playlist descriptions.
 function updatePlaylistDesc() 
 {
@@ -149,6 +149,7 @@ function updatePlaylistDesc()
                                 }
                               }
                             });
+    
     pageToken = playlists.nextPageToken;
   } while (pageToken);
 }

@@ -1,4 +1,4 @@
-// Reads the list of playlists I've created from the spreadsheet.
+// Retrieves a list of playlist titles or IDs from the spreadsheet.
 function getSheetInfo(type)
 {
   var myPlaylists = [];

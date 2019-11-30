@@ -1,7 +1,8 @@
 var ripsFeaturing = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 var removedRips = getRemovedRips();
 
-// Adds new videos to playlists as their associated joke category spreadsheets are updated.
+// To do: improve consistency in formatting, YouTube API usage, and variable names.
+// Adds new videos to playlists when the associated wiki categories have been updated.
 function addVideosToPlaylists()
 {
   startTime = new Date();
@@ -22,6 +23,7 @@ function addVideosToPlaylists()
     for (v in missingVideos)
     {
       var vidNum = parseInt(v) + 1;
+      
       Logger.log("Missing video #" + vidNum + ": " + missingVideos[v]);
       console.log("Missing video #" + vidNum + ": " + missingVideos[v]);
       //*
@@ -47,14 +49,14 @@ function addVideosToPlaylists()
           Logger.log("Video added to " + sheetNames[n])
           console.log("Video added to " + sheetNames[n])
           successCount++;
+          
         } catch (e)
         {
           Logger.log("Video failed to insert.");
           console.log("Video failed to insert.");
           failCount++;
         }
-      } 
-      else
+      } else
       {
         Logger.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
         console.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
@@ -62,10 +64,10 @@ function addVideosToPlaylists()
       }
       //*/
     }
-    // Update the value for lastUpdatedPlaylist and lastUpdatedRow
+    // Update the value for lastUpdatedPlaylist and lastUpdatedRow.
     updateSpreadsheet(sheetNames[n]);
 
-    // Check if the script timer has passed 5 minutes
+    // Check if the script timer has passed 5 minutes.
     var currentTime = new Date();
     if (currentTime.getTime() - startTime.getTime() > 300000)
       break;
@@ -80,7 +82,7 @@ function addVideosToPlaylists()
 
 
 
-// Reads the values of all rips that are in any removed categories on the wiki.
+// Retrieves rip titles from categories of removed rips on the wiki.
 function getRemovedRips()
 {
   var removedListNames = ['9/11_2016', 'GiIvaSunner_non-reuploaded', 'Removed_Green_de_la_Bean_rips', 'Removed_rips', 'Unlisted_rips', 'Unlisted_videos'];
@@ -108,16 +110,16 @@ function getRemovedRips()
     for (j in rips)
       removedList.push(rips[j].title);
   }
+  
   return removedList;
 }
 
 
 
 
-// Reads the values from a sheet containing rips from a joke category.
+// Retrieves rip titles from a wiki category.
 function getCategoryRips(sheetName)
 {
-  //sheetName = "Rips featuring GO MY WAY!!";
   var url = "https://siivagunner.fandom.com/api.php?"; 
   
   var removedCategoryRips = [];
@@ -175,7 +177,7 @@ function getCategoryRips(sheetName)
 
 
 
-// Determines what rips are missing from the playlist.
+// Find rip titles missing from a playlist.
 function getMissingRips(sheetName, playlistID) 
 {
   var list = getCategoryRips(sheetName);
@@ -195,6 +197,7 @@ function getMissingRips(sheetName, playlistID)
   console.log("Total videos: " + list.length);
   
   var notInPlaylist = list;
+  
   for (x in inPlaylist)
   {
     for (y in notInPlaylist)
@@ -209,6 +212,7 @@ function getMissingRips(sheetName, playlistID)
   
   Logger.log("Videos missing from playlist: " + notInPlaylist.length);
   console.log("Videos missing from playlist: " + notInPlaylist.length);
+  
   return notInPlaylist;
 }
 
