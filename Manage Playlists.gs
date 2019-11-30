@@ -1,134 +1,100 @@
-var glNum;
-// Somebody fix this!
 // Creates news playlists as the associated wiki is updated.
 function createPlaylists() 
 {
-  Logger.log("Start!");
-  console.log("Start!");
-
-  var vidID = '';
-  var sheetID = '';
   var playlists = getMissingPlaylists();
+  var row = ripsFeaturing.getRange("I4").getValue() + 2;
   
-  Logger.log("Missing playlists: " + playlists);
+  Logger.log("There are " + playlists.length + " missing playlists: " + playlists);
+  console.log("There are " + playlists.length + " missing playlists: " + playlists);
   
-  for (i in playlists)
+  for (var i = 0; i < playlists.length; i++)
   {
-    if (i != 0 && i < 11)
-    {
-      /*
-      var newPlaylist = YouTube.Playlists.insert(
-        {
-          snippet: {
-            title: playlists[i],
-            description: "SiIvaGunner " + playlists[i].replace('Rips', 'rips') +
-            ". This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing." +
-            "\nhttps://siivagunner.fandom.com/wiki/Category:" + playlists[i].replace(/ /g, '_')
-          },
-          status: {
-            privacyStatus: 'public'
-          }
-        },
-        'snippet,status'
-      );
-      
-      var details = {
-        videoId: vidID,
-        kind: 'youtube#video'
-      }
-      
-      var part = 'snippet';
-      var resource = {
+    // YouTube only allows ten playlists to be created per day.
+    if (i > 10)
+      break;
+    
+    //*
+    var newPlaylist = YouTube.Playlists.insert(
+      {
         snippet: {
-          playlistId: newPlaylist.id
+          title: playlists[i],
+          description: "SiIvaGunner " + playlists[i].replace('Rips', 'rips') +
+          ". This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing." +
+          "\nhttps://siivagunner.fandom.com/wiki/Category:" + playlists[i].replace(/ /g, '_')
+        },
+        status: {
+          privacyStatus: 'public'
         }
-      };
-      
-      sheetID = getSheetID(playlists[i]);
-      
-      Logger.log("glNum: " + glNum);
-      console.log("glNum: " + glNum);
-      
-      ripsFeaturing.getRange(glNum + i, 1).setValue(playlists[i]);
-      ripsFeaturing.getRange(glNum + i, 4).setValue(newPlaylist.id);
-      ripsFeaturing.getRange(glNum + i, 7).setValue(sheetID);
-      
-      updateSheet(newPlaylist.id, playlists[i], sheetID);
-      //*/
-    }
+      },
+      'snippet,status'
+    );
+    
+    ripsFeaturing.getRange(row, 1).setValue(playlists[i]);
+    ripsFeaturing.getRange(row, 4).setValue(newPlaylist.id);
+    
+    Logger.log("Created " + playlists[i] + " [" + newPlaylist.id + "]");
+    console.log("Created " + playlists[i] + " [" + newPlaylist.id + "]");
+    
+    //*/
+    row++;
   }
-  ripsFeaturing.getRange(glNum + i, 1).setValue("Stop");
-
-  Logger.log("Finish!");
-  console.log("Finish!");
 }
 
 
 
 
-// Determines which playlists have not been created yet.
+// Finds categories that do not have playlists.
 function getMissingPlaylists()
 {
-  var spreadsheet = SpreadsheetApp.openById(siivaInfo);
-  var sheets = spreadsheet.getSheets();
-  for (s in sheets)
-    updateSheet("", sheets[s].getName(), siivaInfo);
+  var existingPlaylists = getSheetInfo('names');
+  var missingPlaylists = [];
+  var missing = true;
+
+  var url = "https://siivagunner.fandom.com/api.php?";
   
-  var sheet = spreadsheet.getSheetByName('Rips Featuring...');
-  var data = sheet.getDataRange();
-  var values = data.getValues();
+  var params = {
+    action: "query",
+    list: "categorymembers",
+    cmtitle: "Category:Rips_featuring...",
+    cmtpye: "title",
+    cmlimit: "500",
+    format: "json"
+  };
   
-  var cellRow = 79;
-  var cont = true;
-  var totalPlaylists = [];
-  var existingPlaylists = getSheetInfo('sheetNames');
-  Logger.log("Existing playlists: " + existingPlaylists.length);
+  Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
   
-  while (cont)
+  var response = UrlFetchApp.fetch(url);
+  var data = JSON.parse(response.getContentText());
+  var totalCategories = data.query.categorymembers;
+  
+  for (i in totalCategories)
   {
-    try 
+    for (j in existingPlaylists)
     {
-      if (values[cellRow][0] != "")
-        totalPlaylists[cellRow - 79] = values[cellRow][0].replace('Category:', '');
-      else
-        cont = false;
-    } 
-    catch (e) 
-    {
-      cont = false;
-      console.log(e);
-      Logger.log(e);
+      if (existingPlaylists[j] == totalCategories[i].title.replace("Category:", ""))
+      {
+        missing = false;
+        break;
+      }
     }
-    cellRow++;
+    
+    if (missing)
+      missingPlaylists.push(totalCategories[i].title.replace("Category:", ""));
+    
+    missing = true;
   }
   
-  Logger.log("Total playlists: " + totalPlaylists.length);
-  console.log("Total playlists: " + totalPlaylists.length);
-  
-  var missingPlaylists = totalPlaylists;
-  var row = 0;
-  
-  do
-  {
-    for (var i in missingPlaylists)
-    {
-      if (existingPlaylists[row].equals(missingPlaylists[i].replace(/Rips with/g, "Rips featuring")) 
-          || missingPlaylists[i].equals("Other") || missingPlaylists[i].equals("JoJokes"))
-      missingPlaylists.splice(i,1);
-    }
-    row++;
-  } while (existingPlaylists[row]);
-  
+  Logger.log("Total categories: " + totalCategories.length);
+  Logger.log("Existing playlists: " + existingPlaylists.length);
   Logger.log("Missing playlists: " + missingPlaylists.length);
-  console.log("Missing playlists: " + missingPlaylists.length);
+
   return missingPlaylists;
 }
 
 
 
-// ADD a way to continue where it left off. The same way
-// that addVideosToPlaylists() does.
 
+// To do: add continuation and read playlist ID's from sheet.
 // Updates all playlist descriptions.
 function updatePlaylistDesc() 
 {
@@ -154,12 +120,12 @@ function updatePlaylistDesc()
                                 
                                 switch(item.snippet.title) 
                                 {
-                                  case "Original Compositions from SiIvaGunner":
+                                  case "Rips featuring Original Compositions":
                                     start = "SiIvaGunner rips with original compositions. ";
                                     end = "\nhttps://siivagunner.fandom.com/wiki/Category:Original_compositions";
                                     break;
                                     
-                                  case "SiIvaGunner JoJokes":
+                                  case "Rips featuring JoJokes":
                                     start = "SiIvaGunner rips with JoJokes. ";
                                     end = "\nhttps://siivagunner.fandom.com/wiki/Category:JoJokes";
                                     break;

@@ -11,9 +11,9 @@ function getSheetInfo(type)
   
   var dataRange = "A2:A" + (playlistCount + 1);
   
-  if (type == "sheetNames")
+  if (type == "names")
     var data = ripsFeaturing.getRange(dataRange).getValues();
-  else if (type == "playlistIds")
+  else if (type == "ids")
     var data = ripsFeaturing.getRange(dataRange.replace(/A/g, "D")).getValues();
   
   while (index < lastUpdatedRow - 1)

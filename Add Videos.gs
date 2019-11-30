@@ -6,26 +6,26 @@ function addVideosToPlaylists()
 {
   startTime = new Date();
 
-  var sheetNames = getSheetInfo('sheetNames');
-  var playlistIDs = getSheetInfo('playlistIds');
+  var sheetNames = getSheetInfo('names');
+  var playlistIds = getSheetInfo('ids');
     
   var successCount = 0;
   var failCount = 0;
   
-  for (i in sheetNames)
+  for (n in sheetNames)
   {
-    Logger.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "]");
-    console.log("Working on " + sheetNames[i] + " [" + playlistIDs[i] + "]");
+    Logger.log("Working on " + sheetNames[n] + " [" + playlistIds[n] + "]");
+    console.log("Working on " + sheetNames[n] + " [" + playlistIds[n] + "]");
 
-    var missingVideos = getMissingRips(sheetNames[i], playlistIDs[i])
+    var missingVideos = getMissingRips(sheetNames[n], playlistIds[n])
     
-    for (video in missingVideos)
+    for (v in missingVideos)
     {
-      var vidNum = parseInt(video) + 1;
-      Logger.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      console.log("Missing video #" + vidNum + ": " + missingVideos[video]);
-      /*
-      var searchResult = searchForVideo(missingVideos[video]);
+      var vidNum = parseInt(v) + 1;
+      Logger.log("Missing video #" + vidNum + ": " + missingVideos[v]);
+      console.log("Missing video #" + vidNum + ": " + missingVideos[v]);
+      //*
+      var searchResult = searchForVideo(missingVideos[v]);
       
       if (searchResult[1] != null)
       {
@@ -35,7 +35,7 @@ function addVideosToPlaylists()
           ({
             snippet: 
             {
-              playlistId: playlistIDs[i], 
+              playlistId: playlistIds[n], 
               resourceId: 
               {
                 kind: "youtube#video",
@@ -44,8 +44,8 @@ function addVideosToPlaylists()
             }
           }, "snippet");
           
-          Logger.log("Video added to " + sheetNames[i])
-          console.log("Video added to " + sheetNames[i])
+          Logger.log("Video added to " + sheetNames[n])
+          console.log("Video added to " + sheetNames[n])
           successCount++;
         } catch (e)
         {
@@ -63,7 +63,7 @@ function addVideosToPlaylists()
       //*/
     }
     // Update the value for lastUpdatedPlaylist and lastUpdatedRow
-    updateSpreadsheet(sheetNames[i]);
+    updateSpreadsheet(sheetNames[n]);
 
     // Check if the script timer has passed 5 minutes
     var currentTime = new Date();
@@ -95,7 +95,7 @@ function getRemovedRips()
       list: "categorymembers",
       cmtitle: "Category:" + removedListNames[i],
       cmtpye: "title",
-      cmlimit: "5000",
+      cmlimit: "500",
       format: "json"
     };
     
@@ -131,7 +131,7 @@ function getCategoryRips(sheetName)
     list: "categorymembers",
     cmtitle: "Category:" + formatLink(sheetName),
     cmtpye: "title",
-    cmlimit: "5000",
+    cmlimit: "500",
     format: "json"
   };
   
