@@ -155,18 +155,19 @@ function getCategoryRips(sheetName)
       }
     }
     
-    if (!removed && rips[i].title.indexOf("Category:" === -1))
+    if (!removed && rips[i].title.indexOf("Category:") == -1)
       categoryRips.push(rips[i].title);
     
     removed = false;
   }
-
+  
+  Logger.log("Category rips: " + categoryRips.length);
+  Logger.log("Category rips: " + categoryRips);
+  
   if (removedCategoryRips != "")
   {
     Logger.log("Removed rips: " + removedCategoryRips.length);
     Logger.log("Removed rips: " + removedCategoryRips);
-    Logger.log("Category rips: " + categoryRips.length);
-    Logger.log("Category rips: " + categoryRips);
     console.log("Removed rips: " + removedCategoryRips.length);
     console.log("Removed rips: " + removedCategoryRips);
   }
@@ -238,8 +239,8 @@ function searchForVideo(wikiTitle)
   results.items.forEach(function(item)
                         {
                           videoTitle = item.snippet.title;
-                          Logger.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "\nWiki: " + formatVideoTitle(wikiTitle).toLowerCase());
-                          console.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "    \nWiki: " + formatVideoTitle(wikiTitle).toLowerCase());
+                          Logger.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "\nWiki:  " + formatVideoTitle(wikiTitle).toLowerCase());
+                          console.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "    \nWiki:  " + formatVideoTitle(wikiTitle).toLowerCase());
                           
                           if (formatVideoTitle(videoTitle).toLowerCase().equals(formatVideoTitle(wikiTitle).toLowerCase()))//missingVideos[i])
                           {

@@ -12,10 +12,8 @@ function formatLink(str)
 {
   str = str.replace(/ /g, "_");
   str = str.replace(/#/g, "");
-  str = str.replace(/&/g, "%26");
-  str = str.replace(/'/g, "%27");
-  str = str.replace(/\?/g, "%3F");
-  
+  str = encodeURIComponent(str);
+
   return str;
 }
 
