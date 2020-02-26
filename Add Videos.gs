@@ -203,7 +203,7 @@ function getMissingRips(sheetName, playlistID)
   {
     for (y in notInPlaylist)
     {
-      if (formatVideoTitle(formatForVideosInPlaylist(notInPlaylist[y])).toLowerCase().equals(formatVideoTitle(inPlaylist[x]).toLowerCase()))
+      if (formatVideoTitle(formatForVideosInPlaylist(notInPlaylist[y])).toLowerCase() == formatVideoTitle(inPlaylist[x]).toLowerCase())
         notInPlaylist.splice(y,1);
     }
   }
@@ -221,7 +221,7 @@ function getMissingRips(sheetName, playlistID)
 
 
 // Searches YouTube for the specified video.
-function searchForVideo(wikiTitle) 
+function searchForVideo(wikiTitle)
 {
   var videoID;
   var videoTitle;
@@ -242,7 +242,7 @@ function searchForVideo(wikiTitle)
                           Logger.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "\nWiki:  " + formatVideoTitle(wikiTitle).toLowerCase());
                           console.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "    \nWiki:  " + formatVideoTitle(wikiTitle).toLowerCase());
                           
-                          if (formatVideoTitle(videoTitle).toLowerCase().equals(formatVideoTitle(wikiTitle).toLowerCase()))//missingVideos[i])
+                          if (formatVideoTitle(videoTitle).toLowerCase() == formatVideoTitle(wikiTitle).toLowerCase())//missingVideos[i])
                           {
                             videoID = item.id.videoId;
                             count++;

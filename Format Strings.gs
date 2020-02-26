@@ -1,10 +1,14 @@
 // For testing string comparisons.
 function test()
 {
-  str = "Your Best Nightmare (Beta Mix Alternative Unused OST Version) - Undertale";
-  Logger.log(formatVideoTitle(formatForVideosInPlaylist(str)).toLowerCase());
-  Logger.log(formatVideoTitle(str).toLowerCase());
-  Logger.log(formatVideoTitle(formatForVideosInPlaylist(str)).toLowerCase().equals(formatVideoTitle(str).toLowerCase()));
+  str = "Area 7/12 - Santa Claus Saves the Earth";
+  str1 = formatVideoTitle(formatForVideosInPlaylist(str)).toLowerCase();
+  str2 = formatVideoTitle(str).toLowerCase()
+  Logger.log(str1);
+  Logger.log(str2);
+  Logger.log(typeof str1);
+  Logger.log(typeof str2);
+  Logger.log(formatVideoTitle(formatForVideosInPlaylist(str)).toLowerCase() == formatVideoTitle(str).toLowerCase());
 }
 
 // Formats FANDOM category links.
