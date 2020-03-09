@@ -5,7 +5,6 @@ function createPlaylists()
   var row = ripsFeaturing.getRange("I4").getValue() + 2;
   
   Logger.log("There are " + playlists.length + " missing playlists: " + playlists);
-  console.log("There are " + playlists.length + " missing playlists: " + playlists);
   
   for (var i = 0; i < playlists.length; i++)
   {
@@ -33,7 +32,6 @@ function createPlaylists()
     ripsFeaturing.getRange(row, 4).setValue(newPlaylist.id);
     
     Logger.log("Created " + playlists[i] + " [" + newPlaylist.id + "]");
-    console.log("Created " + playlists[i] + " [" + newPlaylist.id + "]");
     
     //*/
     row++;

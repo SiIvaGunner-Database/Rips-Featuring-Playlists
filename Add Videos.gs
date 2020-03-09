@@ -16,7 +16,6 @@ function addVideosToPlaylists()
   for (n in sheetNames)
   {
     Logger.log("Working on " + sheetNames[n] + " [" + playlistIds[n] + "]");
-    console.log("Working on " + sheetNames[n] + " [" + playlistIds[n] + "]");
 
     var missingVideos = getMissingRips(sheetNames[n], playlistIds[n])
     
@@ -25,7 +24,6 @@ function addVideosToPlaylists()
       var vidNum = parseInt(v) + 1;
       
       Logger.log("Missing video #" + vidNum + ": " + missingVideos[v]);
-      console.log("Missing video #" + vidNum + ": " + missingVideos[v]);
       //*
       var searchResult = searchForVideo(missingVideos[v]);
       
@@ -47,19 +45,16 @@ function addVideosToPlaylists()
           }, "snippet");
           
           Logger.log("Video added to " + sheetNames[n])
-          console.log("Video added to " + sheetNames[n])
           successCount++;
           
         } catch (e)
         {
           Logger.log("Video failed to insert.");
-          console.log("Video failed to insert.");
           failCount++;
         }
       } else
       {
         Logger.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
-        console.log("[" + searchResult[0] + ", " + searchResult[1] + "] Video not found.");
         failCount++;
       }
       //*/
@@ -75,8 +70,6 @@ function addVideosToPlaylists()
   
   Logger.log("Videos added to playlists: " + successCount);
   Logger.log("Videos causing errors: " + failCount);
-  console.log("Videos added to playlists: " + successCount);
-  console.log("Videos causing errors: " + failCount);
 }
 
 
@@ -85,7 +78,7 @@ function addVideosToPlaylists()
 // Retrieves rip titles from categories of removed rips on the wiki.
 function getRemovedRips()
 {
-  var removedListNames = ['9/11_2016', 'GiIvaSunner_non-reuploaded', 'Removed_Green_de_la_Bean_rips', 'Removed_rips', 'Unlisted_rips', 'Unlisted_videos'];
+  var removedListNames = ['9/11_2016', 'GiIvaSunner_non-reuploaded', 'Removed_Green_de_la_Bean_rips', 'Removed_rips', 'Unlisted_rips', 'Unlisted_videos', 'Tracks'];
   var removedList = [];
   
   for (var i in removedListNames)
@@ -168,8 +161,6 @@ function getCategoryRips(sheetName)
   {
     Logger.log("Removed rips: " + removedCategoryRips.length);
     Logger.log("Removed rips: " + removedCategoryRips);
-    console.log("Removed rips: " + removedCategoryRips.length);
-    console.log("Removed rips: " + removedCategoryRips);
   }
   
   return categoryRips;
@@ -195,7 +186,6 @@ function getMissingRips(sheetName, playlistID)
   } while (pageToken)
     
   Logger.log("Total videos: " + list.length);
-  console.log("Total videos: " + list.length);
   
   var notInPlaylist = list;
   
@@ -209,10 +199,7 @@ function getMissingRips(sheetName, playlistID)
   }
   
   Logger.log("Videos in playlist: " + inPlaylist.length);
-  console.log("Videos in playlist: " + inPlaylist.length);
-  
   Logger.log("Videos missing from playlist: " + notInPlaylist.length);
-  console.log("Videos missing from playlist: " + notInPlaylist.length);
   
   return notInPlaylist;
 }
@@ -240,7 +227,6 @@ function searchForVideo(wikiTitle)
                         {
                           videoTitle = item.snippet.title;
                           Logger.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "\nWiki:  " + formatVideoTitle(wikiTitle).toLowerCase());
-                          console.log("Compare:\nVideo: " + formatVideoTitle(videoTitle).toLowerCase() + "    \nWiki:  " + formatVideoTitle(wikiTitle).toLowerCase());
                           
                           if (formatVideoTitle(videoTitle).toLowerCase() == formatVideoTitle(wikiTitle).toLowerCase())//missingVideos[i])
                           {

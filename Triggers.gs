@@ -11,7 +11,6 @@ function recreateTriggers()
   addVideosToPlaylistsTrigger();
 
   Logger.log("All triggers have been successfully deleted and recreated.");
-  console.log("All triggers have been successfully deleted and recreated.");
 }
 
 function createPlaylistsTrigger()
