@@ -61,9 +61,21 @@ function getMissingPlaylists()
   
   Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
   
-  var response = UrlFetchApp.fetch(url);
-  var data = JSON.parse(response.getContentText());
-  var totalCategories = data.query.categorymembers;
+  var ready = true;
+  
+  while (ready)
+  {
+    try
+    {
+      var response = UrlFetchApp.fetch(url);
+      var data = JSON.parse(response.getContentText());
+      var totalCategories = data.query.categorymembers;
+      ready = false;
+    } catch(e)
+    {
+      Logger.log(e);
+    }
+  }
   
   for (i in totalCategories)
   {

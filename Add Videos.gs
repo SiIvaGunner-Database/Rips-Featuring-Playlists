@@ -96,10 +96,22 @@ function getRemovedRips()
     
     Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
     
-    var response = UrlFetchApp.fetch(url);
-    var data = JSON.parse(response.getContentText());
-    var rips = data.query.categorymembers;
+    var ready = true;
     
+    while (ready)
+    {
+      try
+      {
+        var response = UrlFetchApp.fetch(url);
+        var data = JSON.parse(response.getContentText());
+        var rips = data.query.categorymembers;
+        ready = false;
+      } catch(e)
+      {
+        Logger.log(e);
+      }
+    }
+
     for (j in rips)
       removedList.push(rips[j].title);
   }
@@ -132,9 +144,21 @@ function getCategoryRips(sheetName)
   
   Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
   
-  var response = UrlFetchApp.fetch(url);
-  var data = JSON.parse(response.getContentText());
-  var rips = data.query.categorymembers;
+  var ready = true;
+  
+  while (ready)
+  {
+    try
+    {
+      var response = UrlFetchApp.fetch(url);
+      var data = JSON.parse(response.getContentText());
+      var rips = data.query.categorymembers;
+      ready = false;
+    } catch(e)
+    {
+      Logger.log(e);
+    }
+  }
   
   for (i in rips)
   {
@@ -153,9 +177,6 @@ function getCategoryRips(sheetName)
     
     removed = false;
   }
-  
-  Logger.log("Category rips: " + categoryRips.length);
-  Logger.log("Category rips: " + categoryRips);
   
   if (removedCategoryRips != "")
   {

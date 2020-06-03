@@ -51,6 +51,6 @@ function updateSpreadsheet(lastUpdatedPlaylist)
     i++;
   
   ripsFeaturing.getRange('I3').setValue(parseInt(i) + 2);
-
+  
   return;
 }
