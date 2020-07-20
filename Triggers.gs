@@ -7,25 +7,23 @@ function recreateTriggers()
   for (var i = 0; i < triggers.length; i++)
     ScriptApp.deleteTrigger(triggers[i]);
   
-  createPlaylistsTrigger();
-  addVideosToPlaylistsTrigger();
+  updateRipsFeaturingTrigger();
+  updatePlaylistDescriptionsTrigger();
 
   Logger.log("All triggers have been successfully deleted and recreated.");
 }
 
-function createPlaylistsTrigger()
+function updateRipsFeaturingTrigger()
 {
-  ScriptApp.newTrigger('createPlaylists')
+  ScriptApp.newTrigger('updateRipsFeaturing')
   .timeBased()
-  .everyDays(1)
-  .atHour(22)
+  .everyHours(4)
   .create();
 }
 
-
-function addVideosToPlaylistsTrigger()
+function updatePlaylistDescriptionsTrigger()
 {
-  ScriptApp.newTrigger('addVideosToPlaylists')
+  ScriptApp.newTrigger('updatePlaylistDescriptions')
   .timeBased()
   .everyDays(1)
   .atHour(23)
