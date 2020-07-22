@@ -5,8 +5,6 @@ function updateRipsFeaturing()
   var ripsFeaturing = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var categoryNames = getCategoryMembers("Rips_featuring...");
   var lastRow = ripsFeaturing.getLastRow();
-  var sheetNames = ripsFeaturing.getRange(2, 1, lastRow - 1).getValues();
-  var playlistIds = ripsFeaturing.getRange(2, 2, lastRow - 1).getValues();
   var row = ripsFeaturing.getRange(1, 4).getValue();
   var errorLog = [];
   var insertLog = [];
@@ -34,12 +32,15 @@ function updateRipsFeaturing()
         lastRow++;
         ripsFeaturing.getRange(lastRow, 1).setValue(titleHl);
         ripsFeaturing.getRange(lastRow, 2).setValue(idHl);
-        ripsFeaturing.getRange(2, 1, lastRow - 1, 2).sort({column: 1});
         
         Logger.log("Created " + categoryNames[i] + " [" + newPlaylist.id + "] on row " + lastRow);
       }
     }
   }
+  
+  ripsFeaturing.getRange(2, 1, lastRow - 1, 2).sort({column: 1});
+  var sheetNames = ripsFeaturing.getRange(2, 1, lastRow - 1).getValues();
+  var playlistIds = ripsFeaturing.getRange(2, 2, lastRow - 1).getValues();
   
   // Check for new videos to add to "Rips featuring" playlists.
   for (var n in sheetNames)
@@ -63,8 +64,14 @@ function updateRipsFeaturing()
       
       for (var k in playlistRips)
       {
-        if (videoId == playlistRips[k] || videoId == "ignore")
+        if (videoId == playlistRips[k])
           break;
+        else if (videoId == "ignore")
+        {
+          Logger.log(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index] + "\n" + e);
+          errorLog.push(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index] + "\n" + e);
+          break;
+        }
         else if (k == playlistRips.length - 1)
         {
           try
@@ -182,9 +189,10 @@ function updateRipsFeaturing()
           if (id.length != 11)
             id = id.replace(/.*v=/g, "").replace(/.*be\//g, "").replace(/<.*/g, "");
           
-          return id;
+          if (id.length == 11)
+            return id;
         }
-        else return "ignore";
+        return "ignore";
       }
       catch(e)
       {
