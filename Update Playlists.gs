@@ -45,7 +45,7 @@ function updateRipsFeaturing()
   // Check for new videos to add to "Rips featuring" playlists.
   for (var n in sheetNames)
   {
-    if (row > lastRow)
+    if (row => lastRow)
       row = 2;
     else
       row++;
@@ -68,8 +68,8 @@ function updateRipsFeaturing()
           break;
         else if (videoId == "ignore")
         {
-          Logger.log(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index] + "\n" + e);
-          errorLog.push(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index] + "\n" + e);
+          Logger.log(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
+          errorLog.push(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
           break;
         }
         else if (k == playlistRips.length - 1)
