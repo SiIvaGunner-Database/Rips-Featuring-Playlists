@@ -45,7 +45,7 @@ function updateRipsFeaturing()
   // Check for new videos to add to "Rips featuring" playlists.
   for (var n in sheetNames)
   {
-    if (row => lastRow)
+    if (row >= lastRow)
       row = 2;
     else
       row++;
