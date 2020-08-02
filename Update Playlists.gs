@@ -105,7 +105,6 @@ function updateRipsFeaturing()
   // Get all titles from a category.
   function getCategoryMembers(sheetName)
   {
-    var categoryRips = [];
     var e = "";
     var url = "https://siivagunner.fandom.com/api.php?"; 
     var params = {
@@ -125,10 +124,10 @@ function updateRipsFeaturing()
       {
         var response = UrlFetchApp.fetch(url);
         var data = JSON.parse(response.getContentText());
-        var categoryRips = data.query.categorymembers;
-        for (var i in categoryRips)
-          categoryRips[i] = categoryRips[i].title;
-        return categoryRips;
+        var categoryMembers = data.query.categorymembers;
+        for (var i in categoryMembers)
+          categoryMembers[i] = categoryMembers[i].title;
+        return categoryMembers;
       }
       catch(e)
       {
@@ -153,6 +152,9 @@ function updateRipsFeaturing()
       playlistResponse.items.forEach(function(item) {playlistMembers.push(item.snippet.resourceId.videoId)});
       nextPageToken = playlistResponse.nextPageToken;
     }
+    
+    if (playlistMembers.length == 0)
+      playlistMembers = [null];
     
     return playlistMembers;
   }
