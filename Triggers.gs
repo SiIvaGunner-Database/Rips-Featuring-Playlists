@@ -8,7 +8,7 @@ function recreateTriggers()
     ScriptApp.deleteTrigger(triggers[i]);
   
   updateRipsFeaturingTrigger();
-  updatePlaylistDescriptionsTrigger();
+  //updatePlaylistDescriptionsTrigger();
 
   Logger.log("All triggers have been successfully deleted and recreated.");
 }
@@ -17,7 +17,8 @@ function updateRipsFeaturingTrigger()
 {
   ScriptApp.newTrigger('updateRipsFeaturing')
   .timeBased()
-  .everyHours(4)
+  .everyDays(1)
+  .atHour(23)
   .create();
 }
 
@@ -26,6 +27,6 @@ function updatePlaylistDescriptionsTrigger()
   ScriptApp.newTrigger('updatePlaylistDescriptions')
   .timeBased()
   .everyDays(1)
-  .atHour(23)
+  .atHour(22)
   .create();
 }
