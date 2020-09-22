@@ -33,7 +33,13 @@ function updateRipsFeaturing()
         ripsFeaturing.getRange(lastRow, 1).setValue(titleHl);
         ripsFeaturing.getRange(lastRow, 2).setValue(idHl);
         
-        Logger.log("Created " + categoryNames[i] + " [" + newPlaylist.id + "] on row " + lastRow);
+        var emailAddress = "a.k.zamboni@gmail.com";
+        var subject = "New Rips Featuring Playlist";
+        var message = "Created " + categoryNames[i] + " [" + newPlaylist.id + "]";
+        
+        Logger.log(message);
+        
+        MailApp.sendEmail(emailAddress, subject, message);
       }
     }
   }
