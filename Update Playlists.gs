@@ -65,31 +65,34 @@ function updateRipsFeaturing()
     
     for (var i in categoryRips)
     {
-      var vidNum = parseInt(i) + 1;
-      var videoId = getVideoId(categoryRips[i]);
-      
-      for (var k in playlistRips)
+      if (categoryRips[i].indexOf("Category:") == -1)
       {
-        if (videoId == playlistRips[k])
-          break;
-        else if (videoId == "ignore")
+        var vidNum = parseInt(i) + 1;
+        var videoId = getVideoId(categoryRips[i]);
+        
+        for (var k in playlistRips)
         {
-          Logger.log(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
-          errorLog.push(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
-          break;
-        }
-        else if (k == playlistRips.length - 1)
-        {
-          try
+          if (videoId == playlistRips[k])
+            break;
+          else if (videoId == "ignore" || videoId.length != 11)
           {
-            YouTube.PlaylistItems.insert({snippet: {playlistId: playlistIds[index][0], resourceId: {kind: "youtube#video", videoId: videoId}}}, "snippet");
-            Logger.log(categoryRips[i] + " [" + videoId + "] inserted to " + sheetNames[index]);
-            insertLog.push(categoryRips[i] + " [" + videoId + "] inserted to " + sheetNames[index]);
+            Logger.log(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
+            errorLog.push(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
+            break;
           }
-          catch (e)
+          else if (k == playlistRips.length - 1)
           {
-            Logger.log(categoryRips[i] + " [" + videoId + "] failed to insert to " + sheetNames[index] + "\n" + e);
-            errorLog.push(categoryRips[i] + " [" + videoId + "] failed to insert to " + sheetNames[index] + "\n" + e);
+            try
+            {
+              YouTube.PlaylistItems.insert({snippet: {playlistId: playlistIds[index][0], resourceId: {kind: "youtube#video", videoId: videoId}}}, "snippet");
+              Logger.log(categoryRips[i] + " [" + videoId + "] inserted to " + sheetNames[index]);
+              insertLog.push(categoryRips[i] + " [" + videoId + "] inserted to " + sheetNames[index]);
+            }
+            catch (e)
+            {
+              Logger.log(categoryRips[i] + " [" + videoId + "] failed to insert to " + sheetNames[index] + "\n" + e);
+              errorLog.push(categoryRips[i] + " [" + videoId + "] failed to insert to " + sheetNames[index] + "\n" + e);
+            }
           }
         }
       }
@@ -196,10 +199,9 @@ function updateRipsFeaturing()
           var id = idPattern.exec(data).toString().split(",").pop().replace("=", "").trim();
           
           if (id.length != 11)
-            id = id.replace(/.*v=/g, "").replace(/.*be\//g, "").replace(/<.*/g, "");
+            id = id.replace(/.*v=/g, "").replace(/.*be\//g, "").replace(/<.*/g, "").replace(/ .*/g, "");
           
-          if (id.length == 11)
-            return id;
+          return id;
         }
         return "ignore";
       }
