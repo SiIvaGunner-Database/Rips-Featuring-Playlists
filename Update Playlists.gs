@@ -177,7 +177,8 @@ function updateRipsFeaturing()
       action: "query",
       prop: "revisions",
       rvprop: "content",
-      titles: encodeURIComponent(title.toString())
+      titles: encodeURIComponent(title.toString()),
+      format: "json"
     };
     
     Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
@@ -187,7 +188,7 @@ function updateRipsFeaturing()
       try
       {
         var response = UrlFetchApp.fetch(url);
-        var data = response.getContentText().replace(/\|/g, "\n");
+        var data = response.getContentText().replace(/\\n/g, "").replace(/\|/g, "\n");
         
         if (data.indexOf("\nlink") != -1)
         {
