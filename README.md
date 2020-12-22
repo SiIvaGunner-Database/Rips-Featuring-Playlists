@@ -8,10 +8,8 @@ After checking for missing playlists, the script runs again to find missing vide
 
 ### External Links
 
-* [Project Playlists](https://www.youtube.com/channel/UC6ajqR7lEYf-33Gsj4lgVOA/playlists?view=1)
+* [Project Playlists](https://www.youtube.com/channel/UC6ajqR7lEYf-33Gsj4lgVOA/playlists)
 
-* [Project Script](https://script.google.com/d/1e1SrxrNiv3TNQJYM4hDtM6Syhk9lwu9eZtn2cwJgz4fRo837YmaEagAS/edit?usp=sharing)
+* [Project Spreadsheet](https://docs.google.com/spreadsheets/d/1poNOCj5M31QSkdD4AMXvewuFMj-YQ6UzmJvT3PdyxNo/edit)
 
-* [Project Spreadsheet](https://docs.google.com/spreadsheets/d/1poNOCj5M31QSkdD4AMXvewuFMj-YQ6UzmJvT3PdyxNo/edit?usp=sharing)
-
-* [SiIvaGunner Wiki](https://siivagunner.fandom.com/wiki/SiIvaGunner_Wikia)
+* [SiIvaGunner Wiki](https://siivagunner.fandom.com/wiki/SiIvaGunner_Wiki)
