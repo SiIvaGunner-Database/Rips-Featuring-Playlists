@@ -1,0 +1,16 @@
+{
+  "timeZone": "America/Phoenix",
+  "dependencies": {
+    "enabledAdvancedServices": [{
+      "userSymbol": "Sheets",
+      "serviceId": "sheets",
+      "version": "v4"
+    }, {
+      "userSymbol": "YouTube",
+      "serviceId": "youtube",
+      "version": "v3"
+    }]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}

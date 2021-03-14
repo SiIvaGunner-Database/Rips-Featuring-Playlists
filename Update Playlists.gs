@@ -5,10 +5,14 @@ function updateRipsFeaturing()
   var ripsFeaturing = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var categoryNames = getCategoryMembers("Rips_featuring...");
   var lastRow = ripsFeaturing.getLastRow();
+  var sheetNames = ripsFeaturing.getRange(2, 1, lastRow - 1).getValues();
   var row = ripsFeaturing.getRange(1, 4).getValue();
   var errorLog = [];
   var insertLog = [];
   
+  Logger.log("Categories:\t" + categoryNames.length);
+  Logger.log("Playlists:\t" + sheetNames.length);
+
   // Check for new categories.
   for (var i in categoryNames)
   {
