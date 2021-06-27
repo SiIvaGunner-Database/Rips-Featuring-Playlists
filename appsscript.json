@@ -1,5 +1,5 @@
 {
-  "timeZone": "America/Phoenix",
+  "timeZone": "UTC",
   "dependencies": {
     "enabledAdvancedServices": [{
       "userSymbol": "Sheets",
