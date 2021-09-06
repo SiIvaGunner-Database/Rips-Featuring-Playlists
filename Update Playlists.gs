@@ -3,48 +3,48 @@ function updateRipsFeaturing()
 {
   var startTime = new Date();
   var ripsFeaturing = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var categoryNames = getCategoryMembers("Rips_featuring...");
+  var categoryNames = getCategoryMemberTitles("Rips_featuring...");
   var lastRow = ripsFeaturing.getLastRow();
   var sheetNames = ripsFeaturing.getRange(2, 1, lastRow - 1).getValues();
   var row = ripsFeaturing.getRange(1, 4).getValue();
   var errorLog = [];
   var insertLog = [];
+
+  for (var index in sheetNames)
+  {
+    sheetNames[index] = sheetNames[index][0];
+  }
   
   Logger.log("Categories:\t" + categoryNames.length);
   Logger.log("Playlists:\t" + sheetNames.length);
 
   // Check for new categories.
-  for (var i in categoryNames)
+  for (var categoryIndex in categoryNames)
   {
-    categoryNames[i] = categoryNames[i].replace("Category:", "");
+    var categoryName = categoryNames[categoryIndex].replace("Category:", "");
     
-    for (var k in sheetNames)
+    if (!sheetNames.includes(categoryName))
     {
-      if (sheetNames[k] == categoryNames[i])
-        break;
-      else if (k == sheetNames.length - 1)
-      {
-        var desc = "SiIvaGunner " + categoryNames[i].replace("Rips", "rips") +
-                   ". This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing." +
-                   "\nhttps://siivagunner.fandom.com/wiki/Category:" + categoryNames[i].replace(/ /g, "_");
+      var desc = "SiIvaGunner " + categoryName.replace("Rips", "rips") +
+                  ". This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing." +
+                  "\nhttps://siivagunner.fandom.com/wiki/Category:" + categoryName.replace(/ /g, "_");
 
-        var newPlaylist = YouTube.Playlists.insert({snippet: {title: categoryNames[i], description: desc}, status: {privacyStatus: 'public'}}, 'snippet,status');
-        var titleHl = '=HYPERLINK("https://siivagunner.fandom.com/wiki/Category:' + categoryNames[i].replace(/ /g, "_").replace(/"/g, '""') + '", "' + categoryNames[i].replace(/"/g, '""') + '")';
-        var idHl = '=HYPERLINK("https://www.youtube.com/playlist?list=' + newPlaylist.id + '", "' + newPlaylist.id +'")';
-        
-        ripsFeaturing.insertRowAfter(lastRow);
-        lastRow++;
-        ripsFeaturing.getRange(lastRow, 1).setValue(titleHl);
-        ripsFeaturing.getRange(lastRow, 2).setValue(idHl);
-        
-        var emailAddress = "a.k.zamboni@gmail.com";
-        var subject = "New Rips Featuring Playlist";
-        var message = "Created " + categoryNames[i] + " [" + newPlaylist.id + "]";
-        
-        Logger.log(message);
-        
-        MailApp.sendEmail(emailAddress, subject, message);
-      }
+      var newPlaylist = YouTube.Playlists.insert({snippet: {title: categoryName, description: desc}, status: {privacyStatus: 'public'}}, 'snippet,status');
+      var titleHl = '=HYPERLINK("https://siivagunner.fandom.com/wiki/Category:' + categoryName.replace(/ /g, "_").replace(/"/g, '""') + '", "' + categoryName.replace(/"/g, '""') + '")';
+      var idHl = '=HYPERLINK("https://www.youtube.com/playlist?list=' + newPlaylist.id + '", "' + newPlaylist.id +'")';
+      
+      ripsFeaturing.insertRowAfter(lastRow);
+      lastRow++;
+      ripsFeaturing.getRange(lastRow, 1).setValue(titleHl);
+      ripsFeaturing.getRange(lastRow, 2).setValue(idHl);
+      
+      var emailAddress = "a.k.zamboni@gmail.com";
+      var subject = "New Rips Featuring Playlist";
+      var message = "Created " + categoryName + " [" + newPlaylist.id + "]";
+      
+      Logger.log(message);
+      
+      MailApp.sendEmail(emailAddress, subject, message);
     }
   }
   
@@ -53,7 +53,8 @@ function updateRipsFeaturing()
   var playlistIds = ripsFeaturing.getRange(2, 2, lastRow - 1).getValues();
   
   // Check for new videos to add to "Rips featuring" playlists.
-  for (var n in sheetNames)
+  // Loop through each category.
+  for (var sheetIndex in sheetNames)
   {
     if (row >= lastRow)
       row = 2;
@@ -61,41 +62,43 @@ function updateRipsFeaturing()
       row++;
     
     var index = row - 2;
-    Logger.log("Working on " + sheetNames[index] + " [" + playlistIds[index] + "]");
-    var categoryRips = getCategoryMembers(sheetNames[index]);
+    var sheetName = sheetNames[index];
+    var playlistId = playlistIds[index];
+    Logger.log("Working on " + sheetName + " [" + playlistId + "]");
+    var categoryRips = getCategoryMemberTitles(sheetName);
     Logger.log("Videos in category: " + categoryRips.length);
-    var playlistRips = getPlaylistMembers(playlistIds[index]);
+    var playlistRips = getPlaylistMemberIds(playlistId);
     Logger.log("Videos in playlist: " + playlistRips.length);
     
-    for (var i in categoryRips)
+    // Loop through each category member title.
+    for (var categoryIndex in categoryRips)
     {
-      if (categoryRips[i].indexOf("Category:") == -1)
+      var categoryRip = categoryRips[categoryIndex];
+
+      if (categoryRip.indexOf("Category:") == -1)
       {
-        var vidNum = parseInt(i) + 1;
-        var videoId = getVideoId(categoryRips[i]);
-        
-        for (var k in playlistRips)
+        var videoId = getVideoId(categoryRip);
+
+        if (!playlistRips.includes(videoId))
         {
-          if (videoId == playlistRips[k])
-            break;
-          else if (videoId == "ignore" || videoId.length != 11)
+          if (videoId == "ignore" || videoId.length != 11)
           {
-            Logger.log(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
-            errorLog.push(categoryRips[i] + " [" + videoId + "] failed to get the correct ID for " + sheetNames[index]);
+            Logger.log(categoryRip + " [" + videoId + "] failed to get the correct ID for " + sheetName);
+            errorLog.push(categoryRip + " [" + videoId + "] failed to get the correct ID for " + sheetName);
             break;
           }
-          else if (k == playlistRips.length - 1)
+          else
           {
             try
             {
               YouTube.PlaylistItems.insert({snippet: {playlistId: playlistIds[index][0], resourceId: {kind: "youtube#video", videoId: videoId}}}, "snippet");
-              Logger.log(categoryRips[i] + " [" + videoId + "] inserted to " + sheetNames[index]);
-              insertLog.push(categoryRips[i] + " [" + videoId + "] inserted to " + sheetNames[index]);
+              Logger.log(categoryRip + " [" + videoId + "] inserted to " + sheetName);
+              insertLog.push(categoryRip + " [" + videoId + "] inserted to " + sheetName);
             }
             catch (e)
             {
-              Logger.log(categoryRips[i] + " [" + videoId + "] failed to insert to " + sheetNames[index] + "\n" + e);
-              errorLog.push(categoryRips[i] + " [" + videoId + "] failed to insert to " + sheetNames[index] + "\n" + e);
+              Logger.log(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
+              errorLog.push(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
             }
           }
         }
@@ -111,108 +114,128 @@ function updateRipsFeaturing()
   
   Logger.log("Videos added to playlists: " + insertLog.length);
   Logger.log("Videos causing errors: " + errorLog.length);
+}
+
+
+
+
+// Get all video ID's from a playlist.
+function getPlaylistMemberIds(playlistId) 
+{
+  var playlistMemberIds = [];
+  var nextPageToken = "";
   
-  
-  
-  
-  // Get all titles from a category.
-  function getCategoryMembers(sheetName)
+  while (nextPageToken != null)
   {
-    var e = "";
+    var playlistResponse = YouTube.PlaylistItems.list('snippet', {playlistId: playlistId, maxResults: 50, pageToken: nextPageToken});
+    playlistResponse.items.forEach(function(item) {playlistMemberIds.push(item.snippet.resourceId.videoId)});
+    nextPageToken = playlistResponse.nextPageToken;
+  }
+  
+  var videoIds = [];
+
+  // Check for and remove any duplicates.
+  for (var index in playlistMemberIds)
+  {
+    var playlistMemberId = playlistMemberIds[index];
+
+    if (videoIds.includes(playlistMemberId))
+    {
+      Logger.log("Remove from playlist: " + playlistMemberId);
+      var playlistResponse = YouTube.PlaylistItems.list('snippet', {playlistId: playlistId, videoId: playlistMemberId});
+      var deletionId = playlistResponse.items[0].id;
+      YouTube.PlaylistItems.remove(deletionId);
+    }
+    else videoIds.push(playlistMemberId);
+  }
+
+  return videoIds;
+}
+
+
+
+
+// Get all titles from a category.
+function getCategoryMemberTitles(sheetName)
+{
+  var categoryTitles = [];
+  var error = "";
+  var cmcontinue = "";
+
+  while (cmcontinue != null && error.indexOf("404") == -1)
+  {
     var url = "https://siivagunner.fandom.com/api.php?"; 
     var params = {
       action: "query",
       list: "categorymembers",
-      cmtitle: "Category:" + encodeURIComponent(sheetName.toString()),
-      cmtpye: "title",
+      cmtitle: "Category:" + encodeURIComponent(sheetName),
       cmlimit: "500",
+      cmcontinue: encodeURIComponent(cmcontinue),
       format: "json"
     };
-    
+
     Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
-    
-    while (e.indexOf("404") == -1)
+
+    try
     {
-      try
-      {
-        var response = UrlFetchApp.fetch(url);
-        var data = JSON.parse(response.getContentText());
-        var categoryMembers = data.query.categorymembers;
-        for (var i in categoryMembers)
-          categoryMembers[i] = categoryMembers[i].title;
-        return categoryMembers;
-      }
-      catch(e)
-      {
-        Logger.log(e);
-        errorLog.push(e);
-      }
+      var response = UrlFetchApp.fetch(url);
+      var data = JSON.parse(response.getContentText());
+      var categoryMembers = data.query.categorymembers;
+      cmcontinue = data.continue ? data.continue.cmcontinue : null;
+
+      for (var i in categoryMembers)
+        categoryTitles.push(categoryMembers[i].title);
+    }
+    catch(error)
+    {
+      Logger.log(error);
+      errorLog.push(error);
     }
   }
+
+  return categoryTitles;
+}
+
+
+
+
+// Get the video ID from a wiki article.
+function getVideoId(title)
+{
+  var e = "";
+  var url = "https://siivagunner.fandom.com/api.php?"; 
+  var params = {
+    action: "query",
+    prop: "revisions",
+    rvprop: "content",
+    titles: encodeURIComponent(title.toString()),
+    format: "json"
+  };
   
+  Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
   
-  
-  
-  // Get all video ID's from a playlist.
-  function getPlaylistMembers(playlistID) 
+  while (e.indexOf("404") == -1)
   {
-    var playlistMembers = [];
-    var nextPageToken = "";
-    
-    while (nextPageToken != null)
+    try
     {
-      var playlistResponse = YouTube.PlaylistItems.list('snippet', {playlistId: playlistID, maxResults: 50, pageToken: nextPageToken});
-      playlistResponse.items.forEach(function(item) {playlistMembers.push(item.snippet.resourceId.videoId)});
-      nextPageToken = playlistResponse.nextPageToken;
-    }
-    
-    if (playlistMembers.length == 0)
-      playlistMembers = [null];
-    
-    return playlistMembers;
-  }
-  
-  
-  
-  
-  // Get the video ID from a wiki article.
-  function getVideoId(title)
-  {
-    var e = "";
-    var url = "https://siivagunner.fandom.com/api.php?"; 
-    var params = {
-      action: "query",
-      prop: "revisions",
-      rvprop: "content",
-      titles: encodeURIComponent(title.toString()),
-      format: "json"
-    };
-    
-    Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
-    
-    while (e.indexOf("404") == -1)
-    {
-      try
+      var response = UrlFetchApp.fetch(url);
+      var data = response.getContentText().replace(/\\n/g, "").replace(/\|/g, "\n");
+      
+      if (data.indexOf("\nlink") != -1)
       {
-        var response = UrlFetchApp.fetch(url);
-        var data = response.getContentText().replace(/\\n/g, "").replace(/\|/g, "\n");
+        var idPattern = new RegExp("link(.*)\n");
+        var id = idPattern.exec(data).toString().split(",").pop().replace("=", "").trim();
         
-        if (data.indexOf("\nlink") != -1)
-        {
-          var idPattern = new RegExp("link(.*)\n");
-          var id = idPattern.exec(data).toString().split(",").pop().replace("=", "").trim();
-          
-          if (id.length != 11)
-            id = id.replace(/.*v=/g, "").replace(/.*be\//g, "").replace(/<.*/g, "").replace(/ .*/g, "");
-          
-          return id;
-        }
-        return "ignore";
+        if (id.length != 11)
+          id = id.replace(/.*v=/g, "").replace(/.*be\//g, "").replace(/<.*/g, "").replace(/ .*/g, "");
+        
+        return id;
       }
-      catch(e)
-      {
-        Logger.log(e);
-      }
+      return "ignore";
+    }
+    catch(e)
+    {
+      Logger.log(e);
     }
   }
 }
