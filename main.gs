@@ -1,6 +1,5 @@
 // Adds new videos to playlists when the associated wiki categories have been updated.
-function updateRipsFeaturing()
-{
+function updateRipsFeaturing() {
   var startTime = new Date();
   var ripsFeaturing = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var categoryNames = getCategoryMemberTitles("Rips_featuring...");
@@ -10,8 +9,7 @@ function updateRipsFeaturing()
   var errorLog = [];
   var insertLog = [];
 
-  for (var index in sheetNames)
-  {
+  for (var index in sheetNames) {
     sheetNames[index] = sheetNames[index][0];
   }
   
@@ -19,12 +17,10 @@ function updateRipsFeaturing()
   Logger.log("Playlists:\t" + sheetNames.length);
 
   // Check for new categories.
-  for (var categoryIndex in categoryNames)
-  {
+  for (var categoryIndex in categoryNames) {
     var categoryName = categoryNames[categoryIndex].replace("Category:", "");
     
-    if (!sheetNames.includes(categoryName))
-    {
+    if (!sheetNames.includes(categoryName)) {
       var desc = "SiIvaGunner " + categoryName.replace("Rips", "rips") +
                   ". This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing." +
                   "\nhttps://siivagunner.fandom.com/wiki/Category:" + categoryName.replace(/ /g, "_");
@@ -54,8 +50,7 @@ function updateRipsFeaturing()
   
   // Check for new videos to add to "Rips featuring" playlists.
   // Loop through each category.
-  for (var sheetIndex in sheetNames)
-  {
+  for (var sheetIndex in sheetNames) {
     if (row >= lastRow)
       row = 2;
     else
@@ -71,32 +66,25 @@ function updateRipsFeaturing()
     Logger.log("Videos in playlist: " + playlistRips.length);
     
     // Loop through each category member title.
-    for (var categoryIndex in categoryRips)
-    {
+    for (var categoryIndex in categoryRips) {
       var categoryRip = categoryRips[categoryIndex];
 
-      if (categoryRip.indexOf("Category:") == -1)
-      {
+      if (categoryRip.indexOf("Category:") == -1) {
         var videoId = getVideoId(categoryRip);
 
-        if (!playlistRips.includes(videoId))
-        {
-          if (videoId == "ignore" || videoId.length != 11)
-          {
+        if (!playlistRips.includes(videoId)) {
+          if (videoId == "ignore" || videoId.length != 11) {
             Logger.log(categoryRip + " [" + videoId + "] failed to get the correct ID for " + sheetName);
             errorLog.push(categoryRip + " [" + videoId + "] failed to get the correct ID for " + sheetName);
             break;
           }
-          else
-          {
-            try
-            {
+          else {
+            try {
               YouTube.PlaylistItems.insert({snippet: {playlistId: playlistIds[index][0], resourceId: {kind: "youtube#video", videoId: videoId}}}, "snippet");
               Logger.log(categoryRip + " [" + videoId + "] inserted to " + sheetName);
               insertLog.push(categoryRip + " [" + videoId + "] inserted to " + sheetName);
             }
-            catch (e)
-            {
+            catch (e) {
               Logger.log(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
               errorLog.push(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
             }

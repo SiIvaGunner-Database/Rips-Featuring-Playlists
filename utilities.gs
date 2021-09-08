@@ -1,11 +1,9 @@
 // Get all video ID's from a playlist.
-function getPlaylistMemberIds(playlistId) 
-{
+function getPlaylistMemberIds(playlistId) {
   var playlistMemberIds = [];
   var nextPageToken = "";
   
-  while (nextPageToken != null)
-  {
+  while (nextPageToken != null) {
     var playlistResponse = YouTube.PlaylistItems.list('snippet', {playlistId: playlistId, maxResults: 50, pageToken: nextPageToken});
     playlistResponse.items.forEach(function(item) {playlistMemberIds.push(item.snippet.resourceId.videoId)});
     nextPageToken = playlistResponse.nextPageToken;
@@ -14,12 +12,10 @@ function getPlaylistMemberIds(playlistId)
   var videoIds = [];
 
   // Check for and remove any duplicates.
-  for (var index in playlistMemberIds)
-  {
+  for (var index in playlistMemberIds) {
     var playlistMemberId = playlistMemberIds[index];
 
-    if (videoIds.includes(playlistMemberId))
-    {
+    if (videoIds.includes(playlistMemberId)) {
       Logger.log("Remove from playlist: " + playlistMemberId);
       var playlistResponse = YouTube.PlaylistItems.list('snippet', {playlistId: playlistId, videoId: playlistMemberId});
       var deletionId = playlistResponse.items[0].id;
@@ -35,14 +31,12 @@ function getPlaylistMemberIds(playlistId)
 
 
 // Get all titles from a category.
-function getCategoryMemberTitles(sheetName)
-{
+function getCategoryMemberTitles(sheetName) {
   var categoryTitles = [];
   var error = "";
   var cmcontinue = "";
 
-  while (cmcontinue != null && error.indexOf("404") == -1)
-  {
+  while (cmcontinue != null && error.indexOf("404") == -1) {
     var url = "https://siivagunner.fandom.com/api.php?"; 
     var params = {
       action: "query",
@@ -55,8 +49,7 @@ function getCategoryMemberTitles(sheetName)
 
     Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
 
-    try
-    {
+    try {
       var response = UrlFetchApp.fetch(url);
       var data = JSON.parse(response.getContentText());
       var categoryMembers = data.query.categorymembers;
@@ -65,8 +58,7 @@ function getCategoryMemberTitles(sheetName)
       for (var i in categoryMembers)
         categoryTitles.push(categoryMembers[i].title);
     }
-    catch(error)
-    {
+    catch(error) {
       Logger.log(error);
       errorLog.push(error);
     }
@@ -79,8 +71,7 @@ function getCategoryMemberTitles(sheetName)
 
 
 // Get the video ID from a wiki article.
-function getVideoId(title)
-{
+function getVideoId(title) {
   var e = "";
   var url = "https://siivagunner.fandom.com/api.php?"; 
   var params = {
@@ -93,15 +84,12 @@ function getVideoId(title)
   
   Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
   
-  while (e.indexOf("404") == -1)
-  {
-    try
-    {
+  while (e.indexOf("404") == -1) {
+    try {
       var response = UrlFetchApp.fetch(url);
       var data = response.getContentText().replace(/\\n/g, "").replace(/\|/g, "\n");
       
-      if (data.indexOf("\nlink") != -1)
-      {
+      if (data.indexOf("\nlink") != -1) {
         var idPattern = new RegExp("link(.*)\n");
         var id = idPattern.exec(data).toString().split(",").pop().replace("=", "").trim();
         
@@ -112,8 +100,7 @@ function getVideoId(title)
       }
       return "ignore";
     }
-    catch(e)
-    {
+    catch(e) {
       Logger.log(e);
     }
   }
