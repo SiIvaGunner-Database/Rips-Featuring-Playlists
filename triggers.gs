@@ -2,10 +2,10 @@
 // Deletes and recreates all triggers. For use when scheduled times are changed.
 function recreateTriggers() {
   var triggers = ScriptApp.getProjectTriggers();
-  
+
   for (var i = 0; i < triggers.length; i++)
     ScriptApp.deleteTrigger(triggers[i]);
-  
+
   updateRipsFeaturingTrigger();
 
   Logger.log("All triggers have been successfully deleted and recreated.");

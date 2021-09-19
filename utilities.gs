@@ -2,13 +2,13 @@
 function getPlaylistMemberIds(playlistId) {
   var playlistMemberIds = [];
   var nextPageToken = "";
-  
+
   while (nextPageToken != null) {
     var playlistResponse = YouTube.PlaylistItems.list('snippet', {playlistId: playlistId, maxResults: 50, pageToken: nextPageToken});
     playlistResponse.items.forEach(function(item) {playlistMemberIds.push(item.snippet.resourceId.videoId)});
     nextPageToken = playlistResponse.nextPageToken;
   }
-  
+
   var videoIds = [];
 
   // Check for and remove any duplicates.
@@ -36,7 +36,7 @@ function getCategoryMemberTitles(sheetName) {
   var error = "";
   var cmcontinue = "";
 
-  while (cmcontinue != null && error.indexOf("404") == -1) {
+  while (cmcontinue != null && !error.includes("404")) {
     var url = "https://siivagunner.fandom.com/api.php?"; 
     var params = {
       action: "query",
@@ -72,7 +72,7 @@ function getCategoryMemberTitles(sheetName) {
 
 // Get the video ID from a wiki article.
 function getVideoId(title) {
-  var e = "";
+  var error = "";
   var url = "https://siivagunner.fandom.com/api.php?"; 
   var params = {
     action: "query",
@@ -81,27 +81,27 @@ function getVideoId(title) {
     titles: encodeURIComponent(title.toString()),
     format: "json"
   };
-  
+
   Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
-  
-  while (e.indexOf("404") == -1) {
+
+  while (!error.includes("404")) {
     try {
       var response = UrlFetchApp.fetch(url);
       var data = response.getContentText().replace(/\\n/g, "").replace(/\|/g, "\n");
-      
-      if (data.indexOf("\nlink") != -1) {
+
+      if (data.includes("\nlink")) {
         var idPattern = new RegExp("link(.*)\n");
         var id = idPattern.exec(data).toString().split(",").pop().replace("=", "").trim();
-        
+
         if (id.length != 11)
           id = id.replace(/.*v=/g, "").replace(/.*be\//g, "").replace(/<.*/g, "").replace(/ .*/g, "");
-        
+
         return id;
       }
       return "ignore";
     }
-    catch(e) {
-      Logger.log(e);
+    catch(error) {
+      Logger.log(error);
     }
   }
 }
