@@ -85,7 +85,11 @@ function updateRipsFeaturing() {
             catch (e) {
               Logger.log(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
               errorLog.push(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
-              if (e.includes("quota")) { break; }
+
+              if (e.toString().includes("quota")) {
+                Logger.log("The YouTube API quota has been exceeded.");
+                return;
+              }
             }
           }
         }
