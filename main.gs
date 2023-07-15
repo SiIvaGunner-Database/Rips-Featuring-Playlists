@@ -69,7 +69,17 @@ function updateRipsFeaturing() {
       var categoryRip = categoryRips[categoryIndex];
 
       if (!categoryRip.includes("Category:")) {
-        var videoId = getVideoId(categoryRip);
+        // var videoId = getVideoId(categoryRip);
+        var videoId;
+
+        try {
+          videoId = HighQualityUtils.utils().fetchFandomVideoId("siivagunner", categoryRip);
+        }
+        catch (myerror) {
+          Logger.info("Error fetching ID for " + categoryRip);
+          errorLog.push("Error fetching ID for " + categoryRip);
+          continue;
+        }
 
         if (!playlistRips.includes(videoId)) {
           if (videoId == "ignore" || videoId.length != 11) {
@@ -84,6 +94,7 @@ function updateRipsFeaturing() {
             }
             catch (e) {
               Logger.log(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
+              Logger.log(e.stack);
               errorLog.push(categoryRip + " [" + videoId + "] failed to insert to " + sheetName + "\n" + e);
 
               if (e.toString().includes("quota")) {
@@ -93,7 +104,14 @@ function updateRipsFeaturing() {
             }
           }
         }
+        else {
+          Logger.log(videoId + " has already been added");
+        }
       }
+
+      // Check if the script timer has passed 5 minutes, 50 seconds.
+      var currentTime = new Date();
+      if (currentTime.getTime() - startTime.getTime() > 350000) break;
     }
 
     ripsFeaturing.getRange(1, 4).setValue(row);

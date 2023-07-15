@@ -1,15 +1,26 @@
 {
   "timeZone": "UTC",
   "dependencies": {
-    "enabledAdvancedServices": [{
-      "userSymbol": "Sheets",
-      "serviceId": "sheets",
-      "version": "v4"
-    }, {
-      "userSymbol": "YouTube",
-      "serviceId": "youtube",
-      "version": "v3"
-    }]
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Sheets",
+        "serviceId": "sheets",
+        "version": "v4"
+      },
+      {
+        "userSymbol": "YouTube",
+        "serviceId": "youtube",
+        "version": "v3"
+      }
+    ],
+    "libraries": [
+      {
+        "userSymbol": "HighQualityUtils",
+        "version": "0",
+        "libraryId": "1edXoDXtDEng2e6DRVV2tzjchzhks6AZ4-p1GbKt3GnRgrDzpyiAmy7h5",
+        "developmentMode": true
+      }
+    ]
   },
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"

@@ -59,7 +59,7 @@ function getCategoryMemberTitles(sheetName) {
         categoryTitles.push(categoryMembers[i].title);
     }
     catch(error) {
-      Logger.log(error);
+      Logger.log(error.stack);
       errorLog.push(error);
     }
   }
@@ -101,7 +101,7 @@ function getVideoId(title) {
       return "ignore";
     }
     catch(error) {
-      Logger.log(error);
+      Logger.log(error.stack);
     }
   }
 }
