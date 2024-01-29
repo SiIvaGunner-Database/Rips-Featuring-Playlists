@@ -48,6 +48,7 @@ function getCategoryMemberTitles(sheetName) {
     };
 
     Object.keys(params).forEach(function(key) {url += "&" + key + "=" + params[key];});
+    console.log(url);
 
     try {
       var response = UrlFetchApp.fetch(url);
@@ -55,8 +56,18 @@ function getCategoryMemberTitles(sheetName) {
       var categoryMembers = data.query.categorymembers;
       cmcontinue = data.continue ? data.continue.cmcontinue : null;
 
-      for (var i in categoryMembers)
+      if (categoryMembers.length === 0) {
+        var emailAddress = "a.k.zamboni@gmail.com";
+        var subject = "No Category Members Found: " + sheetName;
+        var message = "No category members found: " + sheetName + "\n\n" + url;
+
+        console.warn(message);
+        MailApp.sendEmail(emailAddress, subject, message);
+      }
+
+      for (var i in categoryMembers) {
         categoryTitles.push(categoryMembers[i].title);
+      }
     }
     catch(error) {
       Logger.log(error.stack);
