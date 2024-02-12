@@ -1,4 +1,6 @@
-// Get all video ID's from a playlist.
+/**
+ * Get all video ID's from a playlist.
+ */
 function getPlaylistMemberIds(playlistId) {
   var playlistMemberIds = [];
   var nextPageToken = "";
@@ -27,10 +29,9 @@ function getPlaylistMemberIds(playlistId) {
   return videoIds;
 }
 
-
-
-
-// Get all titles from a category.
+/**
+ * Get all titles from a category.
+ */
 function getCategoryMemberTitles(sheetName) {
   var categoryTitles = [];
   var error = "";
@@ -78,10 +79,9 @@ function getCategoryMemberTitles(sheetName) {
   return categoryTitles;
 }
 
-
-
-
-// Get the video ID from a wiki article.
+/**
+ * Get a video ID from a wiki article.
+ */
 function getVideoId(title) {
   var error = "";
   var url = "https://siivagunner.fandom.com/api.php?"; 
