@@ -4,7 +4,7 @@
  */
 function updateRipsFeaturingPlaylists() {
   const startTime = new Date()
-  const sheet = SpreadsheetApp.openById("1EKQq1K8Bd7hDlFMg1Y5G_a2tWk_FH39bgniUUBGlFKM").getActiveSheet()
+  const sheet = SpreadsheetApp.openById("1poNOCj5M31QSkdD4AMXvewuFMj-YQ6UzmJvT3PdyxNo").getActiveSheet()
   const newPlaylists = createPlaylists(sheet)
   const [addedVideos, removedVideos] = updatePlaylists(sheet, startTime)
   sendEmailSummary(newPlaylists, addedVideos, removedVideos)
@@ -25,13 +25,14 @@ function createPlaylists(sheet) {
 
   // Loop through all of the categories to check for ones that don't have playlists yet
   for (const categoryFullTitle of categoryTitles) {
-    const categoryShortTitle = categoryTitle.replace("Category:", "")
+    const categoryShortTitle = categoryFullTitle.replace("Category:", "")
 
     // If this category already has a playlist, continue to the next category
-    if (playlistTitles.includes(categoryShortTitle) === false) {
+    if (playlistTitles.includes(categoryShortTitle) === true) {
       continue
     }
 
+    console.log("New playlist: ", categoryShortTitle)
     const categoryUrl = `https://siivagunner.fandom.com/wiki/${categoryFullTitle}`
     const description = `
       SiIvaGunner ${categoryShortTitle.replace("Rips", "rips")}. This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing.\n${categoryUrl}
@@ -82,10 +83,10 @@ function updatePlaylists(sheet, startTime) {
       console.log(`${playlistTitle} has been deleted`)
       sheet.getRange(currentRow, 3).setValue("This category has been deleted")
       const updatedDescription = `
-        SiIvaGunner ${categoryShortTitle.replace("Rips", "rips")}. This category has been deleted and is no longer updated.
+        SiIvaGunner ${playlistTitle.replace("Rips", "rips")}. This category has been deleted and is no longer updated.
       `
       const snippet = { "description": updatedDescription }
-      HighQualityUtils.youtube().createPlaylist(playlistId, snippet)
+      HighQualityUtils.youtube().updatePlaylist(playlistId, snippet)
       continue
     }
 
