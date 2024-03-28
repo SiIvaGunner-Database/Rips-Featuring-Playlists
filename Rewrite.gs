@@ -82,10 +82,14 @@ function updatePlaylists(sheet, startTime) {
     if (categoryVideoTitles.length === 0) {
       console.log(`${playlistTitle} has been deleted`)
       sheet.getRange(currentRow, 3).setValue("This category has been deleted")
+      const updatedTitle = `${playlistTitle} (outdated)`
       const updatedDescription = `
         SiIvaGunner ${playlistTitle.replace("Rips", "rips")}. This category has been deleted and is no longer updated.
       `
-      const snippet = { "description": updatedDescription }
+      const snippet = { 
+        "title": updatedTitle,
+        "description": updatedDescription
+      }
       HighQualityUtils.youtube().updatePlaylist(playlistId, snippet)
       continue
     }
@@ -139,9 +143,9 @@ function updatePlaylists(sheet, startTime) {
       // If this video wasn't found in the category, then try to remove it from the playlist
       if (categoryVideoIds.includes(playlistVideoId) === false) {
         try {
-          HighQualityUtils.youtube().removeFromPlaylist(playlistId, categoryVideoId)
+          HighQualityUtils.youtube().removeFromPlaylist(playlistId, playlistVideoId)
           console.log(`Video [${playlistVideoId}] removed from ${playlistTitle}`)
-          removedVideos.push(categoryVideoId)
+          removedVideos.push(playlistVideoId)
         } catch (error) {
           console.warn(`Video [${playlistVideoId}] failed to remove from ${playlistTitle}\n`, error.stack)
 
@@ -175,7 +179,7 @@ function sendEmailSummary(newPlaylists, addedVideos, removedVideos) {
   const emailAddress = "a.k.zamboni@gmail.com"
   const subject = `Rips Featuring Playlists Summary ${new Date()}`
   const message = `
-    New playlists: ${newPlaylists}
+    New playlists: ${newPlaylists.length > 0 ? newPlaylists : "n/a"}
     Videos added to playlists: ${addedVideos.length}
     Videos removed from playlists: ${removedVideos.length}
   `
