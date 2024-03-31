@@ -42,7 +42,7 @@ function createPlaylists(sheet) {
       "description": description
     }
     const newPlaylist = HighQualityUtils.youtube().createPlaylist(snippet)
-    const titleHyperlink = HighQualityUtils.utils().formatFandomHyperlink(categoryFullTitle, "siivagunner")
+    const titleHyperlink = HighQualityUtils.utils().formatFandomHyperlink(categoryShortTitle, "siivagunner")
     const idHyperlink = HighQualityUtils.utils().formatYoutubeHyperlink(newPlaylist.id)
 
     sheet.insertRowAfter(sheet.getLastRow())
