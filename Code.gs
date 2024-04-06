@@ -42,12 +42,14 @@ function createPlaylists(sheet) {
       "description": description
     }
     const newPlaylist = HighQualityUtils.youtube().createPlaylist(snippet)
+    // TODO - Fix the title hyperlink. It's currently missing "Category:" from the URL.
     const titleHyperlink = HighQualityUtils.utils().formatFandomHyperlink(categoryShortTitle, "siivagunner")
     const idHyperlink = HighQualityUtils.utils().formatYoutubeHyperlink(newPlaylist.id)
 
-    sheet.insertRowAfter(sheet.getLastRow())
-    sheet.getRange(sheet.getLastRow(), 1).setValue(titleHyperlink)
-    sheet.getRange(sheet.getLastRow(), 2).setValue(idHyperlink)
+    const lastRow = sheet.getLastRow()
+    sheet.insertRowAfter(lastRow)
+    sheet.getRange(lastRow + 1, 1).setValue(titleHyperlink)
+    sheet.getRange(lastRow + 1, 2).setValue(idHyperlink)
 
     newPlaylists.push(`https://www.youtube.com/playlist?list=${newPlaylist.id}`)
   }
@@ -178,8 +180,9 @@ function updatePlaylists(sheet, startTime) {
 function sendEmailSummary(newPlaylists, addedVideos, removedVideos) {
   const emailAddress = "a.k.zamboni@gmail.com"
   const subject = `Rips Featuring Playlists Summary ${new Date()}`
+  const newPlaylistsString = newPlaylists.length > 0 ? `\n - ${newPlaylists.join("\n - ")}` : "n/a"
   const message = `
-    New playlists: ${newPlaylists.length > 0 ? newPlaylists : "n/a"}
+    New playlists: ${newPlaylistsString}
     Videos added to playlists: ${addedVideos.length}
     Videos removed from playlists: ${removedVideos.length}
   `
