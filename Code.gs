@@ -179,7 +179,7 @@ function updatePlaylists(sheet, startTime) {
  */
 function sendEmailSummary(newPlaylists, addedVideos, removedVideos) {
   const emailAddress = "a.k.zamboni@gmail.com"
-  const subject = `Rips Featuring Playlists Summary ${new Date()}`
+  const subject = `Rips Featuring Playlists Summary ${HighQualityUtils.utils().formatDate()} UTC`
   const newPlaylistsString = newPlaylists.length > 0 ? `\n - ${newPlaylists.join("\n - ")}` : "n/a"
   const message = `
     New playlists: ${newPlaylistsString}
