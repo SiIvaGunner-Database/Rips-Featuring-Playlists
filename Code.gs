@@ -33,7 +33,7 @@ function createPlaylists(sheet) {
     }
 
     console.log("New playlist: ", categoryShortTitle)
-    const categoryUrl = `https://siivagunner.fandom.com/wiki/${categoryFullTitle}`
+    const categoryUrl = `https://siivagunner.fandom.com/wiki/${encodeURI(categoryFullTitle)}`
     const description = `
       SiIvaGunner ${categoryShortTitle.replace("Rips", "rips")}. This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing.\n${categoryUrl}
     `
@@ -88,7 +88,7 @@ function updatePlaylists(sheet, startTime) {
       const updatedDescription = `
         SiIvaGunner ${playlistTitle.replace("Rips", "rips")}. This category has been deleted and is no longer updated.
       `
-      const snippet = { 
+      const snippet = {
         "title": updatedTitle,
         "description": updatedDescription
       }
