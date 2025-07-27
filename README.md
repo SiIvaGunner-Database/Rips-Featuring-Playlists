@@ -1,10 +1,8 @@
 # SiIvaGunner Rips Featuring Playlists
 
-A Google Script project that creates and manages YouTube playlists from the corresponding category items retrieved from the SiIvaGunner wiki. Currently managing over 150 playlists.
+A Google Script project that creates and manages YouTube playlists based on corresponding category items retrieved from the SiIvaGunner wiki.
 
-These playlists are checked for updates on a daily basis. First, the script checks the list of currently existing playlists and compares it to the list of “Rips Featuring...” categories. If missing items are found, the script creates a new playlist for that category, gives it a corresponding title and description, and adds it to the list of existing playlists.
-
-After checking for missing playlists, the script runs again to find missing videos and add them to the appropriate playlists. Going through the list of existing playlists one by one, the script compares the list of videos currently in each playlist to the items in the corresponding categories to find missing videos. It then searches YouTube for each video to add to the playlist if a matching title is found.
+The script checks the list of currently existing playlists and compares it to the list of “Rips Featuring...” categories. If any categories are missing, the script creates a new playlist for that category and adds it to the list of existing playlists. Each playlist is checked one by one to compare the list of videos currently in the playlist to the videos in the corresponding category to identify which videos should be added or removed from the playlist.
 
 ### External Links
 
