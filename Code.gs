@@ -1,3 +1,5 @@
+const SIIVAGUNNER_WIKI_URL = "https://siivagunner.wiki"
+
 /**
  * Create and update "Rips featuring..." playlists to match the wiki categories, then send an email summarizing the results of the run.
  * See also, the "Rips Featuring" sheet: https://docs.google.com/spreadsheets/d/1poNOCj5M31QSkdD4AMXvewuFMj-YQ6UzmJvT3PdyxNo
@@ -33,7 +35,7 @@ function createPlaylists(sheet) {
     }
 
     console.log("New playlist: ", categoryShortTitle)
-    const categoryUrl = `https://siivagunner.fandom.com/wiki/${encodeURI(categoryFullTitle)}`
+    const categoryUrl = `${SIIVAGUNNER_WIKI_URL}/wiki/${encodeURI(categoryFullTitle)}`
     const description = `
       SiIvaGunner ${categoryShortTitle.replace("Rips", "rips")}. This playlist is automatically updated to reflect its respective category on the SiIvaGunner wiki. Some rips may be missing.\n${categoryUrl}
     `
@@ -43,7 +45,7 @@ function createPlaylists(sheet) {
     }
     const newPlaylist = HighQualityUtils.youtube().createPlaylist(snippet)
     // TODO - Fix the title hyperlink. It's currently missing "Category:" from the URL.
-    const titleHyperlink = HighQualityUtils.utils().formatFandomHyperlink(categoryShortTitle, "siivagunner")
+    const titleHyperlink = HighQualityUtils.utils().formatWikiHyperlink(categoryShortTitle, SIIVAGUNNER_WIKI_URL)
     const idHyperlink = HighQualityUtils.utils().formatYoutubeHyperlink(newPlaylist.id)
 
     const lastRow = sheet.getLastRow()
@@ -110,7 +112,7 @@ function updatePlaylists(sheet, startTime) {
 
         // Try to fetch the video ID from the rip article page and continue to the next rip article if it fails
         try {
-          categoryVideoId = HighQualityUtils.utils().fetchFandomVideoId("siivagunner", categoryVideoTitle)
+          categoryVideoId = HighQualityUtils.utils().fetchWikiVideoId(SIIVAGUNNER_WIKI_URL, categoryVideoTitle)
           categoryVideoIds.push(categoryVideoId)
         } catch (error) {
           console.error("Error fetching video ID: ", categoryVideoTitle, "\n", error.stack)
@@ -197,6 +199,6 @@ function sendEmailSummary(newPlaylists, addedVideos, removedVideos) {
  */
 function getCategoryTitles(categoryTitle) {
   return HighQualityUtils.utils()
-    .fetchFandomCategoryMembers("siivagunner", categoryTitle)
+    .fetchWikiCategoryMembers(SIIVAGUNNER_WIKI_URL, categoryTitle)
     .map(categoryMember => categoryMember.title)
 }
