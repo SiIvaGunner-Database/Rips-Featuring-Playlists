@@ -112,6 +112,8 @@ function updatePlaylists(sheet, startTime) {
 
         // Try to fetch the video ID from the rip article page and continue to the next rip article if it fails
         try {
+          // Wait one second before sending the request in order to avoid a 403 Forbidden response 
+          Utilities.sleep(1000)
           categoryVideoId = HighQualityUtils.utils().fetchWikiVideoId(SIIVAGUNNER_WIKI_URL, categoryVideoTitle)
           categoryVideoIds.push(categoryVideoId)
         } catch (error) {
